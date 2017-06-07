@@ -1,0 +1,15 @@
+current directory: /home/mike/Documents/coding_all/ruby-flash-app-pgdb/vendor/bundle/ruby/2.3.0/gems/websocket-driver-0.6.5/ext/websocket-driver
+/usr/bin/ruby2.3 -r ./siteconf20170607-10673-f04bma.rb extconf.rb
+creating Makefile
+
+current directory: /home/mike/Documents/coding_all/ruby-flash-app-pgdb/vendor/bundle/ruby/2.3.0/gems/websocket-driver-0.6.5/ext/websocket-driver
+make "DESTDIR=" clean
+
+current directory: /home/mike/Documents/coding_all/ruby-flash-app-pgdb/vendor/bundle/ruby/2.3.0/gems/websocket-driver-0.6.5/ext/websocket-driver
+make "DESTDIR="
+compiling websocket_mask.c
+linking shared-object websocket_mask.so
+
+current directory: /home/mike/Documents/coding_all/ruby-flash-app-pgdb/vendor/bundle/ruby/2.3.0/gems/websocket-driver-0.6.5/ext/websocket-driver
+make "DESTDIR=" install
+/usr/bin/install -c -m 0755 websocket_mask.so ./.gem.20170607-10673-1sdgz2s
