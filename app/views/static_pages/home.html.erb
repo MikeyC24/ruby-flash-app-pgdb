@@ -1,7 +1,12 @@
-<div class="center jumobtron">
-	<h1> Welcome </h1>
+<% if logged_in? %>
+	<h1> Hi <%= current_user.name %> </h1>
+	<p> More to come here </p>
+<% else %>
+	<div class="center jumobtron">
+		<h1> Welcome </h1>
 
-	<h2>
-	<%= link_to "Sigh up now!", signup_path, class: "btn btn-lg btn-primary" %>
-	</h2>
-</div>
+		<h2>
+		<%= link_to "Sigh up now!", signup_path, class: "btn btn-lg btn-primary" %>
+		</h2>
+	</div>
+<% end %>

@@ -1,6 +1,8 @@
 known issues, bugs, and points
 
-1. 
+1. bootstrap dropdown menu is not working on test local:host enviroment, for now have the links in dropdown menu set up on top
+
+2.
 
 puma for testing/dev
 
@@ -79,3 +81,6 @@ on_worker_boot do
   # deploying-rails-applications-with-the-puma-web-server#on-worker-boot
   ActiveRecord::Base.establish_connection
 end
+
+references for later
+1. csv database upload https://stackoverflow.com/questions/4410794/ruby-on-rails-import-data-from-a-csv-file
