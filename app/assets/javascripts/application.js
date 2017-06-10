@@ -39,10 +39,25 @@ $(document).on("click", "button.click-class", function() {
    ("div.card-refresh").show();
 });
 */
+
 $(document).ready(function() {
 	$(document).on("click", "button.click-class", function() {
-   		$(this).find("div.card-refresh").show();
-   		console.log("test").show();
-   		alert("test");
+   		$("div.card-refresh").show();
+   		console.log("is this going to console")
+   		//$("div.card-refresh").toggle();
+   		//alert("test");
 	});
 });
+
+/*
+$(document).ready(function() {
+	$("button.click-class").click(function( event ) {
+   		//$("div.card-refresh").toggle();
+   		$("div.card-refresh").toggle();
+   		console.log("is this going to console")
+   		//alert("test");
+	});
+});
+*/
+
+

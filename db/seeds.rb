@@ -11,3 +11,19 @@ card1 = ClassListDataInfo.create(class_name: "Array",
 
 card1 = ClassListDataInfo.create(class_name: "File", 
 				class_name_description: "info for File class")
+
+#for x in range(1..hash[x].keys)
+
+=begin
+require 'csv'
+
+class_name_descrip_info_base = File.read(Rails.root.join('lib', 'seeds', 'class_description_hash_full.csv'))
+class_name_descrip_info = CSV.parse(class_name_descrip_info_base, :headers => true, :encoding => 'ISO-8859-1')
+puts class_name_descrip_info
+
+class_name_descrip_info_base = File.read(Rails.root.join('lib', 'seeds', 'class_description_hash_full.csv'))
+class_name_descrip_info = CSV.parse(class_name_descrip_info_base, :headers => true, :encoding => 'ISO-8859-1')
+class_name_descrip_info.each do |row|
+	puts row.to_hash
+end
+=end

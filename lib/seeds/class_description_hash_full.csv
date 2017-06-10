@@ -1,0 +1,3800 @@
+class_name,class_name_description
+ARGF,"
+      
+ARGF is a stream designed for use in scripts that process
+files given as command-line arguments or passed in via STDIN.
+
+The arguments passed to your script are stored in the ARGV Array, one argument per element. ARGF
+assumes that any arguments that aren't filenames have been removed from
+ARGV. For example:
+
+$ ruby argf.rb --verbose file1 file2
+
+ARGV  #=> [""--verbose"", ""file1"", ""file2""]
+option = ARGV.shift #=> ""--verbose""
+ARGV  #=> [""file1"", ""file2""]
+
+You can now use ARGF to work with a concatenation of each of
+these named files. For instance, ARGF.read will return the
+contents of file1 followed by the contents of file2.
+
+After a file in ARGV has been read ARGF removes
+it from the Array. Thus, after all files have been
+read ARGV will be empty.
+
+You can manipulate ARGV yourself to control what
+ARGF operates on. If you remove a file from ARGV,
+it is ignored by ARGF; if you add files to ARGV,
+they are treated as if they were named on the command line. For example:
+
+ARGV.replace [""file1""]
+ARGF.readlines # Returns the contents of file1 as an Array
+ARGV           #=> []
+ARGV.replace [""file2"", ""file3""]
+ARGF.read      # Returns the contents of file2 and file3
+
+
+If ARGV is empty, ARGF acts as if it contained
+STDIN, i.e. the data piped to your script. For example:
+
+$ echo ""glark"" | ruby -e 'p ARGF.read'
+""glark\n""
+
+    "
+ArgumentError,"
+      
+Raised when the arguments are wrong and there isn't a more specific Exception class.
+
+Ex: passing the wrong number of arguments
+
+[1, 2, 3].first(4, 5)
+
+
+raises the exception:
+
+ArgumentError: wrong number of arguments (given 2, expected 1)
+
+Ex: passing an argument that is not acceptable:
+
+[1, 2, 3].first(-4)
+
+
+raises the exception:
+
+ArgumentError: negative array size
+
+    "
+Array,"
+      
+Arrays are ordered, integer-indexed collections of any object.
+
+Array indexing starts at 0, as in C or Java.  A
+negative index is assumed to be relative to the end of the array---that is,
+an index of -1 indicates the last element of the array, -2 is the next to
+last element in the array, and so on.
+
+Creating Arrays¶ ↑
+
+A new array can be created by using the literal constructor
+[].  Arrays can contain different types of objects.  For
+example, the array below contains an Integer, a
+String and a Float:
+
+ary = [1, ""two"", 3.0] #=> [1, ""two"", 3.0]
+
+
+An array can also be created by explicitly calling ::new with zero, one (the initial size
+of the Array) or two arguments (the initial size
+and a default object).
+
+ary = Array.new    #=> []
+Array.new(3)       #=> [nil, nil, nil]
+Array.new(3, true) #=> [true, true, true]
+
+
+Note that the second argument populates the array with references to the
+same object.  Therefore, it is only recommended in cases when you need to
+instantiate arrays with natively immutable objects such as Symbols,
+numbers, true or false.
+
+To create an array with separate objects a block can be passed instead.
+This method is safe to use with mutable objects such as hashes, strings or
+other arrays:
+
+Array.new(4) { Hash.new }  #=> [{}, {}, {}, {}]
+Array.new(4) {|i| i.to_s } #=> [""0"", ""1"", ""2"", ""3""]
+
+
+This is also a quick way to build up multi-dimensional arrays:
+
+empty_table = Array.new(3) { Array.new(3) }
+#=> [[nil, nil, nil], [nil, nil, nil], [nil, nil, nil]]
+
+
+An array can also be created by using the Array() method, provided by Kernel, which tries to call to_ary, then to_a on its argument.
+
+Array({:a => ""a"", :b => ""b""}) #=> [[:a, ""a""], [:b, ""b""]]
+
+
+Example Usage¶ ↑
+
+In addition to the methods it mixes in through the Enumerable module, the Array class has proprietary methods for accessing,
+searching and otherwise manipulating arrays.
+
+Some of the more common ones are illustrated below.
+
+Accessing Elements¶ ↑
+
+Elements in an array can be retrieved using the #[] method.  It can take a single
+integer argument (a numeric index), a pair of arguments (start and length)
+or a range. Negative indices start counting from the end, with -1 being the
+last element.
+
+arr = [1, 2, 3, 4, 5, 6]
+arr[2]    #=> 3
+arr[100]  #=> nil
+arr[-3]   #=> 4
+arr[2, 3] #=> [3, 4, 5]
+arr[1..4] #=> [2, 3, 4, 5]
+arr[1..-3] #=> [2, 3, 4]
+
+
+Another way to access a particular array element is by using the at method
+
+arr.at(0) #=> 1
+
+
+The slice method works in an
+identical manner to #[].
+
+To raise an error for indices outside of the array bounds or else to
+provide a default value when that happens, you can use fetch.
+
+arr = ['a', 'b', 'c', 'd', 'e', 'f']
+arr.fetch(100) #=> IndexError: index 100 outside of array bounds: -6...6
+arr.fetch(100, ""oops"") #=> ""oops""
+
+
+The special methods first and last will return the first and last
+elements of an array, respectively.
+
+arr.first #=> 1
+arr.last  #=> 6
+
+
+To return the first n elements of an array, use take
+
+arr.take(3) #=> [1, 2, 3]
+
+
+drop does the opposite of take, by returning the elements after
+n elements have been dropped:
+
+arr.drop(3) #=> [4, 5, 6]
+
+
+Obtaining Information about an Array¶ ↑
+
+Arrays keep track of their own length at all times.  To query an array
+about the number of elements it contains, use length, count or size.
+
+browsers = ['Chrome', 'Firefox', 'Safari', 'Opera', 'IE']
+browsers.length #=> 5
+browsers.count #=> 5
+
+
+To check whether an array contains any elements at all
+
+browsers.empty? #=> false
+
+
+To check whether a particular item is included in the array
+
+browsers.include?('Konqueror') #=> false
+
+
+Adding Items to Arrays¶ ↑
+
+Items can be added to the end of an array by using either push or <<
+
+arr = [1, 2, 3, 4]
+arr.push(5) #=> [1, 2, 3, 4, 5]
+arr << 6    #=> [1, 2, 3, 4, 5, 6]
+
+
+unshift will add a new item to
+the beginning of an array.
+
+arr.unshift(0) #=> [0, 1, 2, 3, 4, 5, 6]
+
+
+With insert you can add a new
+element to an array at any position.
+
+arr.insert(3, 'apple')  #=> [0, 1, 2, 'apple', 3, 4, 5, 6]
+
+
+Using the insert method, you can
+also insert multiple values at once:
+
+arr.insert(3, 'orange', 'pear', 'grapefruit')
+#=> [0, 1, 2, ""orange"", ""pear"", ""grapefruit"", ""apple"", 3, 4, 5, 6]
+
+
+Removing Items from an Array¶ ↑
+
+The method pop removes the last
+element in an array and returns it:
+
+arr =  [1, 2, 3, 4, 5, 6]
+arr.pop #=> 6
+arr #=> [1, 2, 3, 4, 5]
+
+
+To retrieve and at the same time remove the first item, use shift:
+
+arr.shift #=> 1
+arr #=> [2, 3, 4, 5]
+
+
+To delete an element at a particular index:
+
+arr.delete_at(2) #=> 4
+arr #=> [2, 3, 5]
+
+
+To delete a particular element anywhere in an array, use delete:
+
+arr = [1, 2, 2, 3]
+arr.delete(2) #=> 2
+arr #=> [1,3]
+
+
+A useful method if you need to remove nil values from an array
+is compact:
+
+arr = ['foo', 0, nil, 'bar', 7, 'baz', nil]
+arr.compact  #=> ['foo', 0, 'bar', 7, 'baz']
+arr          #=> ['foo', 0, nil, 'bar', 7, 'baz', nil]
+arr.compact! #=> ['foo', 0, 'bar', 7, 'baz']
+arr          #=> ['foo', 0, 'bar', 7, 'baz']
+
+
+Another common need is to remove duplicate elements from an array.
+
+It has the non-destructive uniq, and
+destructive method uniq!
+
+arr = [2, 5, 6, 556, 6, 6, 8, 9, 0, 123, 556]
+arr.uniq #=> [2, 5, 6, 556, 8, 9, 0, 123]
+
+
+Iterating over Arrays¶ ↑
+
+Like all classes that include the Enumerable
+module, Array has an each method, which defines
+what elements should be iterated over and how.  In case of Array’s each, all elements in the Array instance are yielded to the supplied block in
+sequence.
+
+Note that this operation leaves the array unchanged.
+
+arr = [1, 2, 3, 4, 5]
+arr.each { |a| print a -= 10, "" "" }
+# prints: -9 -8 -7 -6 -5
+#=> [1, 2, 3, 4, 5]
+
+
+Another sometimes useful iterator is reverse_each which will iterate
+over the elements in the array in reverse order.
+
+words = %w[first second third fourth fifth sixth]
+str = """"
+words.reverse_each { |word| str += ""#{word} "" }
+p str #=> ""sixth fifth fourth third second first ""
+
+
+The map method can be used to create
+a new array based on the original array, but with the values modified by
+the supplied block:
+
+arr.map { |a| 2*a }   #=> [2, 4, 6, 8, 10]
+arr                   #=> [1, 2, 3, 4, 5]
+arr.map! { |a| a**2 } #=> [1, 4, 9, 16, 25]
+arr                   #=> [1, 4, 9, 16, 25]
+
+
+Selecting Items from an Array¶ ↑
+
+Elements can be selected from an array according to criteria defined in a
+block.  The selection can happen in a destructive or a non-destructive
+manner.  While the destructive operations will modify the array they were
+called on, the non-destructive methods usually return a new array with the
+selected elements, but leave the original array unchanged.
+
+Non-destructive Selection¶ ↑
+
+arr = [1, 2, 3, 4, 5, 6]
+arr.select { |a| a > 3 }     #=> [4, 5, 6]
+arr.reject { |a| a < 3 }     #=> [3, 4, 5, 6]
+arr.drop_while { |a| a < 4 } #=> [4, 5, 6]
+arr                          #=> [1, 2, 3, 4, 5, 6]
+
+
+Destructive Selection¶ ↑
+
+select! and reject! are the corresponding
+destructive methods to select and
+reject
+
+Similar to select vs. reject, delete_if and keep_if have the exact opposite
+result when supplied with the same block:
+
+arr.delete_if { |a| a < 4 } #=> [4, 5, 6]
+arr                         #=> [4, 5, 6]
+
+arr = [1, 2, 3, 4, 5, 6]
+arr.keep_if { |a| a < 4 } #=> [1, 2, 3]
+arr                       #=> [1, 2, 3]
+
+
+    "
+BasicObject,"
+      
+BasicObject is the parent class of all
+classes in Ruby.  It's an explicit blank class.
+
+BasicObject can be used for creating object
+hierarchies independent of Ruby's object hierarchy, proxy objects like the
+Delegator class, or other uses where namespace pollution from Ruby's
+methods and classes must be avoided.
+
+To avoid polluting BasicObject for other
+users an appropriately named subclass of BasicObject should be created instead of
+directly modifying BasicObject:
+
+class MyObjectSystem < BasicObject
+end
+
+
+BasicObject does not include Kernel (for methods like puts) and BasicObject is outside of the namespace of the
+standard library so common classes will not be found without using a full
+class path.
+
+A variety of strategies can be used to provide useful portions of the
+standard library to subclasses of BasicObject.  A subclass could include
+Kernel to obtain puts, exit, etc.  A
+custom Kernel-like module could be created and included or delegation can
+be used via method_missing:
+
+class MyObjectSystem < BasicObject
+  DELEGATE = [:puts, :p]
+
+  def method_missing(name, *args, &block)
+    super unless DELEGATE.include? name
+    ::Kernel.send(name, *args, &block)
+  end
+
+  def respond_to_missing?(name, include_private = false)
+    DELEGATE.include?(name) or super
+  end
+end
+
+
+Access to classes and modules from the Ruby standard library can be
+obtained in a BasicObject subclass by
+referencing the desired constant from the root like ::File or
+::Enumerator. Like method_missing,
+const_missing can be used to delegate constant lookup to
+Object:
+
+class MyObjectSystem < BasicObject
+  def self.const_missing(name)
+    ::Object.const_get(name)
+  end
+end
+
+
+    "
+Binding,"
+      
+Objects of class Binding encapsulate the execution context at
+some particular place in the code and retain this context for future use.
+The variables, methods, value of self, and possibly an
+iterator block that can be accessed in this context are all retained. Binding objects can be created using
+Kernel#binding, and are made available to the callback of
+Kernel#set_trace_func.
+
+These binding objects can be passed as the second argument of the
+Kernel#eval method, establishing an environment for the
+evaluation.
+
+class Demo
+  def initialize(n)
+    @secret = n
+  end
+  def get_binding
+    binding
+  end
+end
+
+k1 = Demo.new(99)
+b1 = k1.get_binding
+k2 = Demo.new(-3)
+b2 = k2.get_binding
+
+eval(""@secret"", b1)   #=> 99
+eval(""@secret"", b2)   #=> -3
+eval(""@secret"")       #=> nil
+
+
+Binding objects have no class-specific methods.
+
+    "
+Class,"
+      
+Classes in Ruby are first-class objects---each is an instance of class
+Class.
+
+Typically, you create a new class by using:
+
+class Name
+ # some code describing the class behavior
+end
+
+
+When a new class is created, an object of type Class is initialized and assigned to a global
+constant (Name in this case).
+
+When Name.new is called to create a new object, the
+new method in Class is run by default. This can
+be demonstrated by overriding new in Class:
+
+class Class
+  alias old_new new
+  def new(*args)
+    print ""Creating a new "", self.name, ""\n""
+    old_new(*args)
+  end
+end
+
+class Name
+end
+
+n = Name.new
+
+
+produces:
+
+Creating a new Name
+
+
+Classes, modules, and objects are interrelated. In the diagram that
+follows, the vertical arrows represent inheritance, and the parentheses
+metaclasses. All metaclasses are instances of the class `Class'.
+
+                         +---------+             +-...
+                         |         |             |
+         BasicObject-----|-->(BasicObject)-------|-...
+             ^           |         ^             |
+             |           |         |             |
+          Object---------|----->(Object)---------|-...
+             ^           |         ^             |
+             |           |         |             |
+             +-------+   |         +--------+    |
+             |       |   |         |        |    |
+             |    Module-|---------|--->(Module)-|-...
+             |       ^   |         |        ^    |
+             |       |   |         |        |    |
+             |     Class-|---------|---->(Class)-|-...
+             |       ^   |         |        ^    |
+             |       +---+         |        +----+
+             |                     |
+obj--->OtherClass---------->(OtherClass)-----------...
+
+    "
+ClosedQueueError,"
+      
+    "
+Complex,"
+      
+A complex number can be represented as a paired real number with imaginary
+unit; a+bi.  Where a is real part, b is imaginary part and i is imaginary
+unit.  Real a equals complex a+0i mathematically.
+
+Complex object can be created as literal, and
+also by using Kernel#Complex, ::rect, ::polar or #to_c method.
+
+2+1i                 #=> (2+1i)
+Complex(1)           #=> (1+0i)
+Complex(2, 3)        #=> (2+3i)
+Complex.polar(2, 3)  #=> (-1.9799849932008908+0.2822400161197344i)
+3.to_c               #=> (3+0i)
+
+You can also create complex object from floating-point numbers or strings.
+
+Complex(0.3)         #=> (0.3+0i)
+Complex('0.3-0.5i')  #=> (0.3-0.5i)
+Complex('2/3+3/4i')  #=> ((2/3)+(3/4)*i)
+Complex('1@2')       #=> (-0.4161468365471424+0.9092974268256817i)
+
+0.3.to_c             #=> (0.3+0i)
+'0.3-0.5i'.to_c      #=> (0.3-0.5i)
+'2/3+3/4i'.to_c      #=> ((2/3)+(3/4)*i)
+'1@2'.to_c           #=> (-0.4161468365471424+0.9092974268256817i)
+
+
+A complex object is either an exact or an inexact number.
+
+Complex(1, 1) / 2    #=> ((1/2)+(1/2)*i)
+Complex(1, 1) / 2.0  #=> (0.5+0.5i)
+
+
+    "
+Complex::compatible,"
+      
+    "
+ConditionVariable,"
+      
+ConditionVariable objects augment
+class Mutex. Using condition variables, it is possible to suspend while in
+the middle of a critical section until a resource becomes available.
+
+Example:
+
+require 'thread'
+
+mutex = Mutex.new
+resource = ConditionVariable.new
+
+a = Thread.new {
+   mutex.synchronize {
+     # Thread 'a' now needs the resource
+     resource.wait(mutex)
+     # 'a' can now have the resource
+   }
+}
+
+b = Thread.new {
+   mutex.synchronize {
+     # Thread 'b' has finished using the resource
+     resource.signal
+   }
+}
+
+
+    "
+Continuation,"
+      
+Continuation objects are generated by Kernel#callcc, after having
++require+d continuation. They hold a return address and execution
+context, allowing a nonlocal return to the end of the callcc
+block from anywhere within a program. Continuations are somewhat analogous
+to a structured version of C's setjmp/longjmp (although they
+contain more state, so you might consider them closer to threads).
+
+For instance:
+
+require ""continuation""
+arr = [ ""Freddie"", ""Herbie"", ""Ron"", ""Max"", ""Ringo"" ]
+callcc{|cc| $cc = cc}
+puts(message = arr.shift)
+$cc.call unless message =~ /Max/
+
+
+produces:
+
+Freddie
+Herbie
+Ron
+Max
+
+
+Also you can call callcc in other methods:
+
+require ""continuation""
+
+def g
+  arr = [ ""Freddie"", ""Herbie"", ""Ron"", ""Max"", ""Ringo"" ]
+  cc = callcc { |cc| cc }
+  puts arr.shift
+  return cc, arr.size
+end
+
+def f
+  c, size = g
+  c.call(c) if size > 1
+end
+
+f
+
+
+This (somewhat contrived) example allows the inner loop to abandon
+processing early:
+
+require ""continuation""
+callcc {|cont|
+  for i in 0..4
+    print ""\n#{i}: ""
+    for j in i*5...(i+1)*5
+      cont.call() if j == 17
+      printf ""%3d"", j
+    end
+  end
+}
+puts
+
+
+produces:
+
+0:   0  1  2  3  4
+1:   5  6  7  8  9
+2:  10 11 12 13 14
+3:  15 16
+
+    "
+Data,"
+      
+This is a recommended base class for C extensions using Data_Make_Struct or
+Data_Wrap_Struct, see doc/extension.rdoc for details.
+
+    "
+Dir,"
+      
+Objects of class Dir are directory streams representing
+directories in the underlying file system. They provide a variety of ways
+to list directories and their contents. See also File.
+
+The directory used in these examples contains the two regular files
+(config.h and main.rb), the parent directory
+(..), and the directory itself (.).
+
+    "
+ENV,"
+      
+ENV is a hash-like accessor for environment
+variables.
+
+    "
+EOFError,"
+      
+Raised by some IO operations when reaching the end of
+file. Many IO methods exist in two forms,
+
+one that returns nil when the end of file is reached, the
+other raises EOFError.
+
+EOFError is a subclass of IOError.
+
+file = File.open(""/etc/hosts"")
+file.read
+file.gets     #=> nil
+file.readline #=> EOFError: end of file reached
+
+
+    "
+Encoding,"
+      
+An Encoding instance represents a character
+encoding usable in Ruby. It is defined as a constant under the Encoding namespace. It has a name and optionally,
+aliases:
+
+Encoding::ISO_8859_1.name
+#=> ""ISO-8859-1""
+
+Encoding::ISO_8859_1.names
+#=> [""ISO-8859-1"", ""ISO8859-1""]
+
+
+Ruby methods dealing with encodings return or accept Encoding instances as arguments (when a method
+accepts an Encoding instance as an argument, it
+can be passed an Encoding name or alias
+instead).
+
+""some string"".encoding
+#=> #<Encoding:UTF-8>
+
+string = ""some string"".encode(Encoding::ISO_8859_1)
+#=> ""some string""
+string.encoding
+#=> #<Encoding:ISO-8859-1>
+
+""some string"".encode ""ISO-8859-1""
+#=> ""some string""
+
+
+Encoding::ASCII_8BIT is a special encoding that is usually
+used for a byte string, not a character string. But as the name insists,
+its characters in the range of ASCII are considered as ASCII characters.
+This is useful when you use ASCII-8BIT characters with other ASCII
+compatible characters.
+
+Changing an encoding¶ ↑
+
+The associated Encoding of a String can be changed in two different ways.
+
+First, it is possible to set the Encoding of a
+string to a new Encoding without changing the
+internal byte representation of the string, with String#force_encoding. This
+is how you can tell Ruby the correct encoding of a string.
+
+string
+#=> ""R\xC3\xA9sum\xC3\xA9""
+string.encoding
+#=> #<Encoding:ISO-8859-1>
+string.force_encoding(Encoding::UTF_8)
+#=> ""R\u00E9sum\u00E9""
+
+
+Second, it is possible to transcode a string, i.e. translate its internal
+byte representation to another encoding. Its associated encoding is also
+set to the other encoding. See String#encode for the various forms
+of transcoding, and the Encoding::Converter class for additional
+control over the transcoding process.
+
+string
+#=> ""R\u00E9sum\u00E9""
+string.encoding
+#=> #<Encoding:UTF-8>
+string = string.encode!(Encoding::ISO_8859_1)
+#=> ""R\xE9sum\xE9""
+string.encoding
+#=> #<Encoding::ISO-8859-1>
+
+
+Script encoding¶ ↑
+
+All Ruby script code has an associated Encoding
+which any String literal created in the source
+code will be associated to.
+
+The default script encoding is Encoding::UTF-8 after v2.0, but
+it can be changed by a magic comment on the first line of the source code
+file (or second line, if there is a shebang line on the first). The comment
+must contain the word coding or encoding,
+followed by a colon, space and the Encoding
+name or alias:
+
+# encoding: UTF-8
+
+""some string"".encoding
+#=> #<Encoding:UTF-8>
+
+
+The __ENCODING__ keyword returns the script encoding of the
+file which the keyword is written:
+
+# encoding: ISO-8859-1
+
+__ENCODING__
+#=> #<Encoding:ISO-8859-1>
+
+
+ruby -K will change the default locale encoding, but this is
+not recommended. Ruby source files should declare its script encoding by a
+magic comment even when they only depend on US-ASCII strings or regular
+expressions.
+
+Locale encoding¶ ↑
+
+The default encoding of the environment. Usually derived from locale.
+
+see ::locale_charmap,
+::find(‘locale’)
+
+Filesystem encoding¶ ↑
+
+The default encoding of strings from the filesystem of the environment.
+This is used for strings of file names or paths.
+
+see ::find(‘filesystem’)
+
+External encoding¶ ↑
+
+Each IO object has an external encoding which
+indicates the encoding that Ruby will use to read its data. By default Ruby
+sets the external encoding of an IO object to the
+default external encoding. The default external encoding is set by locale
+encoding or the interpreter -E option. ::default_external
+returns the current value of the external encoding.
+
+ENV[""LANG""]
+#=> ""UTF-8""
+Encoding.default_external
+#=> #<Encoding:UTF-8>
+
+$ ruby -E ISO-8859-1 -e ""p Encoding.default_external""
+#<Encoding:ISO-8859-1>
+
+$ LANG=C ruby -e 'p Encoding.default_external'
+#<Encoding:US-ASCII>
+
+The default external encoding may also be set through ::default_external=,
+but you should not do this as strings created before and after the change
+will have inconsistent encodings.  Instead use ruby -E to
+invoke ruby with the correct external encoding.
+
+When you know that the actual encoding of the data of an IO object is not the default external encoding, you can
+reset its external encoding with IO#set_encoding or set it at IO object creation (see IO.new options).
+
+Internal encoding¶ ↑
+
+To process the data of an IO object which has an
+encoding different from its external encoding, you can set its internal
+encoding. Ruby will use this internal encoding to transcode the data when
+it is read from the IO object.
+
+Conversely, when data is written to the IO object it
+is transcoded from the internal encoding to the external encoding of the IO object.
+
+The internal encoding of an IO object can be set with
+IO#set_encoding or at IO object creation (see IO.new options).
+
+The internal encoding is optional and when not set, the Ruby default
+internal encoding is used. If not explicitly set this default internal
+encoding is nil meaning that by default, no transcoding
+occurs.
+
+The default internal encoding can be set with the interpreter option
+-E. ::default_internal
+returns the current internal encoding.
+
+$ ruby -e 'p Encoding.default_internal'
+nil
+
+$ ruby -E ISO-8859-1:UTF-8 -e ""p [Encoding.default_external, \
+  Encoding.default_internal]""
+[#<Encoding:ISO-8859-1>, #<Encoding:UTF-8>]
+
+The default internal encoding may also be set through ::default_internal=,
+but you should not do this as strings created before and after the change
+will have inconsistent encodings.  Instead use ruby -E to
+invoke ruby with the correct internal encoding.
+
+IO encoding example¶ ↑
+
+In the following example a UTF-8 encoded string “Ru00E9sumu00E9” is
+transcoded for output to ISO-8859-1 encoding, then read back in and
+transcoded to UTF-8:
+
+string = ""R\u00E9sum\u00E9""
+
+open(""transcoded.txt"", ""w:ISO-8859-1"") do |io|
+  io.write(string)
+end
+
+puts ""raw text:""
+p File.binread(""transcoded.txt"")
+puts
+
+open(""transcoded.txt"", ""r:ISO-8859-1:UTF-8"") do |io|
+  puts ""transcoded text:""
+  p io.read
+end
+
+
+While writing the file, the internal encoding is not specified as it is
+only necessary for reading.  While reading the file both the internal and
+external encoding must be specified to obtain the correct result.
+
+$ ruby t.rb
+raw text:
+""R\xE9sum\xE9""
+
+transcoded text:
+""R\u00E9sum\u00E9""
+
+    "
+Encoding::CompatibilityError,"
+      
+Raised by Encoding and String methods when the source encoding is
+incompatible with the target encoding.
+
+    "
+Encoding::Converter,"
+      
+    "
+Encoding::ConverterNotFoundError,"
+      
+Raised by transcoding methods when a named encoding does not correspond
+with a known converter.
+
+    "
+Encoding::InvalidByteSequenceError,"
+      
+Raised by Encoding and String methods when the string being transcoded
+contains a byte invalid for the either the source or target encoding.
+
+    "
+Encoding::UndefinedConversionError,"
+      
+Raised by Encoding and String methods when a transcoding operation
+fails.
+
+    "
+EncodingError,"
+      
+EncodingError is the base class for
+encoding errors.
+
+    "
+Enumerator,"
+      
+A class which allows both internal and external iteration.
+
+An Enumerator can be created by the following
+methods.
+
+Kernel#to_enum
+
+Kernel#enum_for
+
+::new
+
+
+Most methods have two forms: a block form where the contents are evaluated
+for each item in the enumeration, and a non-block form which returns a new
+Enumerator wrapping the iteration.
+
+enumerator = %w(one two three).each
+puts enumerator.class # => Enumerator
+
+enumerator.each_with_object(""foo"") do |item, obj|
+  puts ""#{obj}: #{item}""
+end
+
+# foo: one
+# foo: two
+# foo: three
+
+enum_with_obj = enumerator.each_with_object(""foo"")
+puts enum_with_obj.class # => Enumerator
+
+enum_with_obj.each do |item, obj|
+  puts ""#{obj}: #{item}""
+end
+
+# foo: one
+# foo: two
+# foo: three
+
+
+This allows you to chain Enumerators together.  For example, you can map a
+list's elements to strings containing the index and the element as a string
+via:
+
+puts %w[foo bar baz].map.with_index { |w, i| ""#{i}:#{w}"" }
+# => [""0:foo"", ""1:bar"", ""2:baz""]
+
+
+An Enumerator can also be used as an external
+iterator. For example, #next
+returns the next value of the iterator or raises StopIteration if the Enumerator is at the end.
+
+e = [1,2,3].each   # returns an enumerator object.
+puts e.next   # => 1
+puts e.next   # => 2
+puts e.next   # => 3
+puts e.next   # raises StopIteration
+
+
+You can use this to implement an internal iterator as follows:
+
+def ext_each(e)
+  while true
+    begin
+      vs = e.next_values
+    rescue StopIteration
+      return $!.result
+    end
+    y = yield(*vs)
+    e.feed y
+  end
+end
+
+o = Object.new
+
+def o.each
+  puts yield
+  puts yield(1)
+  puts yield(1, 2)
+  3
+end
+
+# use o.each as an internal iterator directly.
+puts o.each {|*x| puts x; [:b, *x] }
+# => [], [:b], [1], [:b, 1], [1, 2], [:b, 1, 2], 3
+
+# convert o.each to an external iterator for
+# implementing an internal iterator.
+puts ext_each(o.to_enum) {|*x| puts x; [:b, *x] }
+# => [], [:b], [1], [:b, 1], [1, 2], [:b, 1, 2], 3
+
+
+    "
+Enumerator::Generator,"
+      
+Generator
+
+    "
+Enumerator::Lazy,"
+      
+Lazy
+
+    "
+Enumerator::Yielder,"
+      
+Yielder
+
+    "
+Exception,"
+      
+Descendants of class Exception are used to
+communicate between Kernel#raise
+and rescue statements in begin ... end blocks. Exception objects carry information about the
+exception – its type (the exception’s class name), an optional descriptive
+string, and optional traceback information.  Exception subclasses may add additional
+information like NameError#name.
+
+Programs may make subclasses of Exception,
+typically of StandardError or RuntimeError, to provide custom classes and
+add additional information. See the subclass list below for defaults for
+raise and rescue.
+
+When an exception has been raised but not yet handled (in
+rescue, ensure, at_exit and
+END blocks) the global variable $! will contain
+the current exception and $@ contains the current exception’s
+backtrace.
+
+It is recommended that a library should have one subclass of StandardError or RuntimeError and have specific exception types
+inherit from it.  This allows the user to rescue a generic exception type
+to catch all exceptions the library may raise even if future versions of
+the library add new exception subclasses.
+
+For example:
+
+class MyLibrary
+  class Error < RuntimeError
+  end
+
+  class WidgetError < Error
+  end
+
+  class FrobError < Error
+  end
+
+end
+
+
+To handle both WidgetError and FrobError the library user can rescue
+MyLibrary::Error.
+
+The built-in subclasses of Exception are:
+
+NoMemoryError
+
+ScriptError
+
+LoadError
+
+NotImplementedError
+
+SyntaxError
+
+
+SecurityError
+
+SignalException
+
+Interrupt
+
+
+StandardError -- default for
+rescue
+
+ArgumentError
+
+UncaughtThrowError
+
+
+EncodingError
+
+FiberError
+
+IOError
+
+EOFError
+
+
+IndexError
+
+KeyError
+
+StopIteration
+
+
+LocalJumpError
+
+NameError
+
+NoMethodError
+
+
+RangeError
+
+FloatDomainError
+
+
+RegexpError
+
+RuntimeError -- default for
+raise
+
+SystemCallError
+
+Errno::*
+
+
+ThreadError
+
+TypeError
+
+ZeroDivisionError
+
+
+SystemExit
+
+SystemStackError
+
+fatal – impossible to rescue
+
+
+    "
+FalseClass,"
+      
+The global value false is the only instance of class
+FalseClass and represents a logically false value in boolean
+expressions. The class provides operators allowing false to
+participate correctly in logical expressions.
+
+    "
+Fiber,"
+      
+Fibers are primitives for implementing light weight cooperative concurrency
+in Ruby. Basically they are a means of creating code blocks that can be
+paused and resumed, much like threads. The main difference is that they are
+never preempted and that the scheduling must be done by the programmer and
+not the VM.
+
+As opposed to other stackless light weight concurrency models, each fiber
+comes with a stack.  This enables the fiber to be paused from deeply nested
+function calls within the fiber block.  See the ruby(1) manpage to
+configure the size of the fiber stack(s).
+
+When a fiber is created it will not run automatically. Rather it must be
+explicitly asked to run using the Fiber#resume method. The
+code running inside the fiber can give up control by calling
+Fiber.yield in which case it yields control back to caller
+(the caller of the Fiber#resume).
+
+Upon yielding or termination the Fiber returns the
+value of the last executed expression
+
+For instance:
+
+fiber = Fiber.new do
+  Fiber.yield 1
+  2
+end
+
+puts fiber.resume
+puts fiber.resume
+puts fiber.resume
+
+
+produces
+
+1
+2
+FiberError: dead fiber called
+
+The Fiber#resume method accepts an arbitrary number of
+parameters, if it is the first call to resume then they will
+be passed as block arguments. Otherwise they will be the return value of
+the call to Fiber.yield
+
+Example:
+
+fiber = Fiber.new do |first|
+  second = Fiber.yield first + 2
+end
+
+puts fiber.resume 10
+puts fiber.resume 14
+puts fiber.resume 18
+
+
+produces
+
+12
+14
+FiberError: dead fiber called
+
+    "
+FiberError,"
+      
+Raised when an invalid operation is attempted on a Fiber, in particular when attempting to call/resume a
+dead fiber, attempting to yield from the root fiber, or calling a fiber
+across threads.
+
+fiber = Fiber.new{}
+fiber.resume #=> nil
+fiber.resume #=> FiberError: dead fiber called
+
+
+    "
+File,"
+      
+A File is an abstraction of any file object accessible by the
+program and is closely associated with class IO.
+File includes the methods of module FileTest as
+class methods, allowing you to write (for example)
+File.exist?(""foo"").
+
+In the description of File methods, permission
+bits are a platform-specific set of bits that indicate permissions of
+a file. On Unix-based systems, permissions are viewed as a set of three
+octets, for the owner, the group, and the rest of the world. For each of
+these entities, permissions may be set to read, write, or execute the file:
+
+The permission bits 0644 (in octal) would thus be interpreted
+as read/write for owner, and read-only for group and other. Higher-order
+bits may also be used to indicate the type of file (plain, directory, pipe,
+socket, and so on) and various other special features. If the permissions
+are for a directory, the meaning of the execute bit changes; when set the
+directory can be searched.
+
+On non-Posix operating systems, there may be only the ability to make a
+file read-only or read-write. In this case, the remaining permission bits
+will be synthesized to resemble typical values. For instance, on Windows NT
+the default permission bits are 0644, which means read/write
+for owner, read-only for all others. The only change that can be made is to
+make the file read-only, which is reported as 0444.
+
+Various constants for the methods in File can be
+found in File::Constants.
+
+    "
+File::Stat,"
+      
+Objects of class File::Stat encapsulate common status
+information for File objects. The information is recorded at
+the moment the File::Stat object is created; changes made to
+the file after that point will not be reflected. File::Stat
+objects are returned by IO#stat, File::stat,
+File#lstat, and File::lstat. Many of these
+methods return platform-specific values, and not all values are meaningful
+on all systems. See also Kernel#test.
+
+    "
+Float,"
+      
+Float objects represent inexact real numbers using
+the native architecture's double-precision floating point representation.
+
+Floating point has a different arithmetic and is an inexact number. So you
+should know its esoteric system. see following:
+
+docs.sun.com/source/806-3568/ncg_goldberg.html
+
+wiki.github.com/rdp/ruby_tutorials_core/ruby-talk-faq#wiki-floats_imprecise
+
+en.wikipedia.org/wiki/Floating_point#Accuracy_problems
+
+
+    "
+FloatDomainError,"
+      
+Raised when attempting to convert special float values (in particular
+infinite or NaN) to numerical classes which don't
+support them.
+
+Float::INFINITY.to_r
+#=> FloatDomainError: Infinity
+
+
+    "
+Hash,"
+      
+A Hash is a dictionary-like collection of unique
+keys and their values. Also called associative arrays, they are similar to
+Arrays, but where an Array uses integers as its
+index, a Hash allows you to use any object type.
+
+Hashes enumerate their values in the order that the corresponding keys were
+inserted.
+
+A Hash can be easily created by using its implicit
+form:
+
+grades = { ""Jane Doe"" => 10, ""Jim Doe"" => 6 }
+
+
+Hashes allow an alternate syntax for keys that are symbols. Instead of
+
+options = { :font_size => 10, :font_family => ""Arial"" }
+
+
+You could write it as:
+
+options = { font_size: 10, font_family: ""Arial"" }
+
+
+Each named key is a symbol you can access in hash:
+
+options[:font_size]  # => 10
+
+
+A Hash can also be created through its ::new method:
+
+grades = Hash.new
+grades[""Dorothy Doe""] = 9
+
+
+Hashes have a default value that is returned when accessing keys
+that do not exist in the hash. If no default is set nil is
+used. You can set the default value by sending it as an argument to ::new:
+
+grades = Hash.new(0)
+
+
+Or by using the default=
+method:
+
+grades = {""Timmy Doe"" => 8}
+grades.default = 0
+
+
+Accessing a value in a Hash requires using its key:
+
+puts grades[""Jane Doe""] # => 0
+
+
+Common Uses¶ ↑
+
+Hashes are an easy way to represent data structures, such as
+
+books         = {}
+books[:matz]  = ""The Ruby Programming Language""
+books[:black] = ""The Well-Grounded Rubyist""
+
+
+Hashes are also commonly used as a way to have named parameters in
+functions. Note that no brackets are used below. If a hash is the last
+argument on a method call, no braces are needed, thus creating a really
+clean interface:
+
+Person.create(name: ""John Doe"", age: 27)
+
+def self.create(params)
+  @name = params[:name]
+  @age  = params[:age]
+end
+
+
+Hash Keys¶ ↑
+
+Two objects refer to the same hash key when their hash value
+is identical and the two objects are eql? to each other.
+
+A user-defined class may be used as a hash key if the hash and
+eql? methods are overridden to provide meaningful behavior. 
+By default, separate instances refer to separate hash keys.
+
+A typical implementation of hash is based on the object’s data
+while eql? is usually aliased to the overridden
+== method:
+
+class Book
+  attr_reader :author, :title
+
+  def initialize(author, title)
+    @author = author
+    @title = title
+  end
+
+  def ==(other)
+    self.class === other and
+      other.author == @author and
+      other.title == @title
+  end
+
+  alias eql? ==
+
+  def hash
+    @author.hash ^ @title.hash # XOR
+  end
+end
+
+book1 = Book.new 'matz', 'Ruby in a Nutshell'
+book2 = Book.new 'matz', 'Ruby in a Nutshell'
+
+reviews = {}
+
+reviews[book1] = 'Great reference!'
+reviews[book2] = 'Nice and compact!'
+
+reviews.length #=> 1
+
+
+See also Object#hash and Object#eql?
+
+    "
+IO,"
+      
+The IO class is the basis for all input and output in
+Ruby. An I/O stream may be duplexed (that is, bidirectional), and
+so may use more than one native operating system stream.
+
+Many of the examples in this section use the File
+class, the only standard subclass of IO. The two
+classes are closely associated.  Like the File
+class, the Socket library subclasses from IO (such as
+TCPSocket or UDPSocket).
+
+The Kernel#open method can create
+an IO (or File) object for
+these types of arguments:
+
+A plain string represents a filename suitable for the underlying operating
+system.
+
+A string starting with ""|"" indicates a subprocess.
+The remainder of the string following the ""|"" is
+invoked as a process with appropriate input/output channels connected to
+it.
+
+A string equal to ""|-"" will create another Ruby
+instance as a subprocess.
+
+
+The IO may be opened with different file modes
+(read-only, write-only) and encodings for proper conversion.  See ::new for these options.  See Kernel#open for details of the various
+command formats described above.
+
+::popen, the Open3 library, or 
+Process#spawn may also be used to communicate with subprocesses through an
+IO.
+
+Ruby will convert pathnames between different operating system conventions
+if possible.  For instance, on a Windows system the filename
+""/gumby/ruby/test.rb"" will be opened as
+""\gumby\ruby\test.rb"".  When specifying a
+Windows-style filename in a Ruby string, remember to escape the
+backslashes:
+
+""C:\\gumby\\ruby\\test.rb""
+
+
+Our examples here will use the Unix-style forward slashes;
+File::ALT_SEPARATOR can be used to get the platform-specific separator
+character.
+
+The global constant ARGF (also accessible as
+$<) provides an IO-like stream which allows access to all
+files mentioned on the command line (or STDIN if no files are mentioned).
+ARGF#path and its alias ARGF#filename are provided to access
+the name of the file currently being read.
+
+io/console¶ ↑
+
+The io/console extension provides methods for interacting with the console.
+The console can be accessed from IO.console or the standard
+input/output/error IO objects.
+
+Requiring io/console adds the following methods:
+
+IO::console
+
+IO#raw
+
+IO#raw!
+
+IO#cooked
+
+IO#cooked!
+
+IO#getch
+
+IO#echo=
+
+IO#echo?
+
+IO#noecho
+
+IO#winsize
+
+IO#winsize=
+
+IO#iflush
+
+IO#ioflush
+
+IO#oflush
+
+
+Example:
+
+require 'io/console'
+rows, columns = $stdout.winsize
+puts ""Your screen is #{columns} wide and #{rows} tall""
+
+
+    "
+IO::EAGAINWaitReadable,"
+      
+    "
+IO::EAGAINWaitWritable,"
+      
+    "
+IO::EINPROGRESSWaitReadable,"
+      
+    "
+IO::EINPROGRESSWaitWritable,"
+      
+    "
+IO::EWOULDBLOCKWaitReadable,"
+      
+    "
+IO::EWOULDBLOCKWaitWritable,"
+      
+    "
+IOError,"
+      
+Raised when an IO operation fails.
+
+File.open(""/etc/hosts"") {|f| f << ""example""}
+  #=> IOError: not opened for writing
+
+File.open(""/etc/hosts"") {|f| f.close; f.read }
+  #=> IOError: closed stream
+
+
+Note that some IO failures raise
+SystemCallErrors and these are not subclasses of IOError:
+
+File.open(""does/not/exist"")
+  #=> Errno::ENOENT: No such file or directory - does/not/exist
+
+
+    "
+IndexError,"
+      
+Raised when the given index is invalid.
+
+a = [:foo, :bar]
+a.fetch(0)   #=> :foo
+a[4]         #=> nil
+a.fetch(4)   #=> IndexError: index 4 outside of array bounds: -2...2
+
+
+    "
+Integer,"
+      
+Holds Integer values.  You cannot add a
+singleton method to an Integer. Any attempt to
+add a singleton method to an Integer object will
+raise a TypeError.
+
+    "
+Interrupt,"
+      
+Raised with the interrupt signal is received, typically because the user
+pressed on Control-C (on most posix platforms). As such, it is a subclass
+of SignalException.
+
+begin
+  puts ""Press ctrl-C when you get bored""
+  loop {}
+rescue Interrupt => e
+  puts ""Note: You will typically use Signal.trap instead.""
+end
+
+
+produces:
+
+Press ctrl-C when you get bored
+
+then waits until it is interrupted with Control-C and then prints:
+
+Note: You will typically use Signal.trap instead.
+
+    "
+KeyError,"
+      
+Raised when the specified key is not found. It is a subclass of IndexError.
+
+h = {""foo"" => :bar}
+h.fetch(""foo"") #=> :bar
+h.fetch(""baz"") #=> KeyError: key not found: ""baz""
+
+
+    "
+LoadError,"
+      
+Raised when a file required (a Ruby script, extension library, ...) fails
+to load.
+
+require 'this/file/does/not/exist'
+
+
+raises the exception:
+
+LoadError: no such file to load -- this/file/does/not/exist
+
+    "
+LocalJumpError,"
+      
+Raised when Ruby can't yield as requested.
+
+A typical scenario is attempting to yield when no block is given:
+
+def call_block
+  yield 42
+end
+call_block
+
+
+raises the exception:
+
+LocalJumpError: no block given (yield)
+
+A more subtle example:
+
+def get_me_a_return
+  Proc.new { return 42 }
+end
+get_me_a_return.call
+
+
+raises the exception:
+
+LocalJumpError: unexpected return
+
+    "
+MatchData,"
+      
+MatchData is the type of the special variable $~,
+and is the type of the object returned by Regexp#match and
+Regexp.last_match. It encapsulates all the results of a
+pattern match, results normally accessed through the special variables
+$&, $', $`, $1,
+$2, and so on.
+
+    "
+Math::DomainError,"
+      
+Raised when a mathematical function is evaluated outside of its domain of
+definition.
+
+For example, since cos returns values in the range -1..1, its
+inverse function acos is only defined on that interval:
+
+Math.acos(42)
+
+
+produces:
+
+Math::DomainError: Numerical argument is out of domain - ""acos""
+
+    "
+Method,"
+      
+Method
+
+    "
+Module,"
+      
+A Module is a collection of methods and constants. The methods
+in a module may be instance methods or module methods. Instance methods
+appear as methods in a class when the module is included, module methods do
+not. Conversely, module methods may be called without creating an
+encapsulating object, while instance methods may not. (See
+Module#module_function.)
+
+In the descriptions that follow, the parameter sym refers to a
+symbol, which is either a quoted string or a Symbol (such as
+:name).
+
+module Mod
+  include Math
+  CONST = 1
+  def meth
+    #  ...
+  end
+end
+Mod.class              #=> Module
+Mod.constants          #=> [:CONST, :PI, :E]
+Mod.instance_methods   #=> [:meth]
+
+
+    "
+NameError,"
+      
+Raised when a given name is invalid or undefined.
+
+puts foo
+
+
+raises the exception:
+
+NameError: undefined local variable or method `foo' for main:Object
+
+Since constant names must start with a capital:
+
+Integer.const_set :answer, 42
+
+
+raises the exception:
+
+NameError: wrong constant name answer
+
+    "
+NilClass,"
+      
+The class of the singleton object nil.
+
+    "
+NoMemoryError,"
+      
+Raised when memory allocation fails.
+
+    "
+NoMethodError,"
+      
+Raised when a method is called on a receiver which doesn't have it defined
+and also fails to respond with method_missing.
+
+""hello"".to_ary
+
+
+raises the exception:
+
+NoMethodError: undefined method `to_ary' for ""hello"":String
+
+    "
+NotImplementedError,"
+      
+Raised when a feature is not implemented on the current platform. For
+example, methods depending on the fsync or fork
+system calls may raise this exception if the underlying operating system or
+Ruby runtime does not support them.
+
+Note that if fork raises a NotImplementedError,
+then respond_to?(:fork) returns false.
+
+    "
+Numeric,"
+      
+Numeric is the class from which all higher-level
+numeric classes should inherit.
+
+Numeric allows instantiation of heap-allocated
+objects. Other core numeric classes such as Integer are implemented as immediates, which means
+that each Integer is a single immutable object
+which is always passed by value.
+
+a = 1
+puts 1.object_id == a.object_id   #=> true
+
+
+There can only ever be one instance of the integer 1, for
+example. Ruby ensures this by preventing instantiation and duplication.
+
+Integer.new(1)   #=> NoMethodError: undefined method `new' for Integer:Class
+1.dup            #=> TypeError: can't dup Integer
+
+
+For this reason, Numeric should be used when
+defining other numeric classes.
+
+Classes which inherit from Numeric must
+implement coerce, which returns a two-member Array containing an object that has been coerced into
+an instance of the new class and self (see coerce).
+
+Inheriting classes should also implement arithmetic operator methods
+(+, -, * and /) and the
+<=> operator (see Comparable). These methods may rely on
+coerce to ensure interoperability with instances of other
+numeric classes.
+
+class Tally < Numeric
+  def initialize(string)
+    @string = string
+  end
+
+  def to_s
+    @string
+  end
+
+  def to_i
+    @string.size
+  end
+
+  def coerce(other)
+    [self.class.new('|' * other.to_i), self]
+  end
+
+  def <=>(other)
+    to_i <=> other.to_i
+  end
+
+  def +(other)
+    self.class.new('|' * (to_i + other.to_i))
+  end
+
+  def -(other)
+    self.class.new('|' * (to_i - other.to_i))
+  end
+
+  def *(other)
+    self.class.new('|' * (to_i * other.to_i))
+  end
+
+  def /(other)
+    self.class.new('|' * (to_i / other.to_i))
+  end
+end
+
+tally = Tally.new('||')
+puts tally * 2            #=> ""||||""
+puts tally > 1            #=> true
+
+
+    "
+Object,"
+      
+Object is the default root of all Ruby objects. 
+Object inherits from BasicObject which allows creating alternate
+object hierarchies.  Methods on Object are
+available to all classes unless explicitly overridden.
+
+Object mixes in the Kernel module, making the built-in kernel functions
+globally accessible.  Although the instance methods of Object are defined by the Kernel module, we have chosen to document them here
+for clarity.
+
+When referencing constants in classes inheriting from Object you do not need to use the full namespace. 
+For example, referencing File inside YourClass
+will find the top-level File class.
+
+In the descriptions of Object's methods, the parameter symbol
+refers to a symbol, which is either a quoted string or a Symbol (such as :name).
+
+    "
+ObjectSpace::WeakMap,"
+      
+An ObjectSpace::WeakMap object holds references
+to any objects, but those objects can get garbage collected.
+
+This class is mostly used internally by WeakRef, please use
+lib/weakref.rb for the public interface.
+
+    "
+Proc,"
+      
+Proc objects are blocks of code that have been bound to a set
+of local variables. Once bound, the code may be called in different
+contexts and still access those variables.
+
+def gen_times(factor)
+  return Proc.new {|n| n*factor }
+end
+
+times3 = gen_times(3)
+times5 = gen_times(5)
+
+times3.call(12)               #=> 36
+times5.call(5)                #=> 25
+times3.call(times5.call(4))   #=> 60
+
+
+    "
+Process::Status,"
+      
+Process::Status encapsulates the information on the status of
+a running or terminated system process. The built-in variable
+$? is either nil or a
+Process::Status object.
+
+fork { exit 99 }   #=> 26557
+Process.wait       #=> 26557
+$?.class           #=> Process::Status
+$?.to_i            #=> 25344
+$? >> 8            #=> 99
+$?.stopped?        #=> false
+$?.exited?         #=> true
+$?.exitstatus      #=> 99
+
+
+Posix systems record information on processes using a 16-bit integer.  The
+lower bits record the process status (stopped, exited, signaled) and the
+upper bits possibly contain additional information (for example the
+program's return code in the case of exited processes). Pre Ruby 1.8, these
+bits were exposed directly to the Ruby program. Ruby now encapsulates these
+in a Process::Status object. To maximize compatibility,
+however, these objects retain a bit-oriented interface. In the descriptions
+that follow, when we talk about the integer value of stat, we're
+referring to this 16 bit value.
+
+    "
+Process::Waiter,"
+      
+    "
+Queue,"
+      
+The Queue class implements multi-producer,
+multi-consumer queues. It is especially useful in threaded programming when
+information must be exchanged safely between multiple threads. The Queue class implements all the required locking
+semantics.
+
+The class implements FIFO type of queue. In a FIFO queue, the first tasks
+added are the first retrieved.
+
+Example:
+
+require 'thread'
+queue = Queue.new
+
+producer = Thread.new do
+  5.times do |i|
+     sleep rand(i) # simulate expense
+     queue << i
+     puts ""#{i} produced""
+  end
+end
+
+consumer = Thread.new do
+  5.times do |i|
+     value = queue.pop
+     sleep rand(i/2) # simulate expense
+     puts ""consumed #{value}""
+  end
+end
+
+
+    "
+Random,"
+      
+Random provides an interface to Ruby's
+pseudo-random number generator, or PRNG.  The PRNG produces a deterministic
+sequence of bits which approximate true randomness. The sequence may be
+represented by integers, floats, or binary strings.
+
+The generator may be initialized with either a system-generated or
+user-supplied seed value by using ::srand.
+
+The class method #rand provides the
+base functionality of Kernel#rand
+along with better handling of floating point values. These are both
+interfaces to Random::DEFAULT, the Ruby system PRNG.
+
+::new will create a new PRNG with a
+state independent of Random::DEFAULT, allowing multiple generators with
+different seed values or sequence positions to exist simultaneously. Random objects can be marshaled, allowing sequences
+to be saved and resumed.
+
+PRNGs are currently implemented as a modified Mersenne Twister with a
+period of 2**19937-1.
+
+    "
+Range,"
+      
+A Range represents an interval—a set of values with a
+beginning and an end. Ranges may be constructed using the
+s..e and
+s...e literals, or with ::new. Ranges constructed using
+.. run from the beginning to the end inclusively. Those
+created using ... exclude the end value. When used as an
+iterator, ranges return each value in the sequence.
+
+(-1..-5).to_a      #=> []
+(-5..-1).to_a      #=> [-5, -4, -3, -2, -1]
+('a'..'e').to_a    #=> [""a"", ""b"", ""c"", ""d"", ""e""]
+('a'...'e').to_a   #=> [""a"", ""b"", ""c"", ""d""]
+
+
+Custom Objects in Ranges¶ ↑
+
+Ranges can be constructed using any objects that can be compared using the
+<=> operator. Methods that treat the range as a sequence
+(#each and methods inherited from Enumerable)
+expect the begin object to implement a succ method to return
+the next object in sequence. The step and include? methods require the
+begin object to implement succ or to be numeric.
+
+In the Xs class below both <=> and
+succ are implemented so Xs can be used to
+construct ranges. Note that the Comparable
+module is included so the == method is defined in terms of
+<=>.
+
+class Xs                # represent a string of 'x's
+  include Comparable
+  attr :length
+  def initialize(n)
+    @length = n
+  end
+  def succ
+    Xs.new(@length + 1)
+  end
+  def <=>(other)
+    @length <=> other.length
+  end
+  def to_s
+    sprintf ""%2d #{inspect}"", @length
+  end
+  def inspect
+    'x' * @length
+  end
+end
+
+
+An example of using Xs to construct a range:
+
+r = Xs.new(3)..Xs.new(6)   #=> xxx..xxxxxx
+r.to_a                     #=> [xxx, xxxx, xxxxx, xxxxxx]
+r.member?(Xs.new(5))       #=> true
+
+
+    "
+RangeError,"
+      
+Raised when a given numerical value is out of range.
+
+[1, 2, 3].drop(1 << 100)
+
+
+raises the exception:
+
+RangeError: bignum too big to convert into `long'
+
+    "
+Rational,"
+      
+A rational number can be represented as a paired integer number; a/b
+(b>0).  Where a is numerator and b is denominator.  Integer a equals rational a/1 mathematically.
+
+In ruby, you can create rational object with Rational, #to_r, rationalize method or
+suffixing r to a literal.  The return values will be irreducible.
+
+Rational(1)      #=> (1/1)
+Rational(2, 3)   #=> (2/3)
+Rational(4, -6)  #=> (-2/3)
+3.to_r           #=> (3/1)
+2/3r             #=> (2/3)
+
+You can also create rational object from floating-point numbers or strings.
+
+Rational(0.3)    #=> (5404319552844595/18014398509481984)
+Rational('0.3')  #=> (3/10)
+Rational('2/3')  #=> (2/3)
+
+0.3.to_r         #=> (5404319552844595/18014398509481984)
+'0.3'.to_r       #=> (3/10)
+'2/3'.to_r       #=> (2/3)
+0.3.rationalize  #=> (3/10)
+
+
+A rational object is an exact number, which helps you to write program
+without any rounding errors.
+
+10.times.inject(0){|t,| t + 0.1}              #=> 0.9999999999999999
+10.times.inject(0){|t,| t + Rational('0.1')}  #=> (1/1)
+
+
+However, when an expression has inexact factor (numerical value or
+operation), will produce an inexact result.
+
+Rational(10) / 3   #=> (10/3)
+Rational(10) / 3.0 #=> 3.3333333333333335
+
+Rational(-8) ** Rational(1, 3)
+                   #=> (1.0000000000000002+1.7320508075688772i)
+
+
+    "
+Rational::compatible,"
+      
+    "
+Regexp,"
+      
+A Regexp holds a regular expression, used to match a pattern
+against strings. Regexps are created using the /.../ and
+%r{...} literals, and by the Regexp::new
+constructor.
+
+Regular expressions (regexps) are patterns which describe the
+contents of a string. They’re used for testing whether a string contains a
+given pattern, or extracting the portions that match. They are created with
+the /pat/ and
+%r{pat} literals or the
+Regexp.new constructor.
+
+A regexp is usually delimited with forward slashes (/). For
+example:
+
+/hay/ =~ 'haystack'   #=> 0
+/y/.match('haystack') #=> #<MatchData ""y"">
+
+
+If a string contains the pattern it is said to match. A literal
+string matches itself.
+
+Here ‘haystack’ does not contain the pattern ‘needle’, so it doesn’t match:
+
+/needle/.match('haystack') #=> nil
+
+
+Here ‘haystack’ contains the pattern ‘hay’, so it matches:
+
+/hay/.match('haystack')    #=> #<MatchData ""hay"">
+
+
+Specifically, /st/ requires that the string contains the
+letter s followed by the letter t, so it matches
+haystack, also.
+
+=~ and #match¶ ↑
+
+Pattern matching may be achieved by using =~ operator or #match method.
+
+=~ operator¶ ↑
+
+=~ is Ruby's basic pattern-matching operator.  When one
+operand is a regular expression and the other is a string then the regular
+expression is used as a pattern to match against the string.  (This
+operator is equivalently defined by Regexp and String so the order of String and Regexp do not
+matter. Other classes may have different implementations of
+=~.)  If a match is found, the operator returns index of first
+match in string, otherwise it returns nil.
+
+/hay/ =~ 'haystack'   #=> 0
+'haystack' =~ /hay/   #=> 0
+/a/   =~ 'haystack'   #=> 1
+/u/   =~ 'haystack'   #=> nil
+
+
+Using =~ operator with a String and
+Regexp the $~ global variable is set
+after a successful match.  $~ holds a MatchData object. ::last_match is equivalent to
+$~.
+
+#match method¶ ↑
+
+The match method returns a MatchData object:
+
+/st/.match('haystack')   #=> #<MatchData ""st"">
+
+
+Metacharacters and Escapes¶ ↑
+
+The following are metacharacters (, ),
+[, ], {, },
+., ?, +, *. They have a
+specific meaning when appearing in a pattern. To match them literally they
+must be backslash-escaped. To match a backslash literally backslash-escape
+that: \\\.
+
+/1 \+ 2 = 3\?/.match('Does 1 + 2 = 3?') #=> #<MatchData ""1 + 2 = 3?"">
+
+
+Patterns behave like double-quoted strings so can contain the same
+backslash escapes.
+
+/\s\u{6771 4eac 90fd}/.match(""Go to 東京都"")
+    #=> #<MatchData "" 東京都"">
+
+
+Arbitrary Ruby expressions can be embedded into patterns with the
+#{...} construct.
+
+place = ""東京都""
+/#{place}/.match(""Go to 東京都"")
+    #=> #<MatchData ""東京都"">
+
+
+Character Classes¶ ↑
+
+A character class is delimited with square brackets
+([, ]) and lists characters that may appear at
+that point in the match. /[ab]/ means a or
+b, as opposed to /ab/ which means a followed
+by b.
+
+/W[aeiou]rd/.match(""Word"") #=> #<MatchData ""Word"">
+
+
+Within a character class the hyphen (-) is a metacharacter
+denoting an inclusive range of characters. [abcd] is
+equivalent to [a-d]. A range can be followed by another range,
+so [abcdwxyz] is equivalent to [a-dw-z]. The
+order in which ranges or individual characters appear inside a character
+class is irrelevant.
+
+/[0-9a-f]/.match('9f') #=> #<MatchData ""9"">
+/[9f]/.match('9f')     #=> #<MatchData ""9"">
+
+
+If the first character of a character class is a caret (^) the
+class is inverted: it matches any character except those named.
+
+/[^a-eg-z]/.match('f') #=> #<MatchData ""f"">
+
+
+A character class may contain another character class. By itself this isn’t
+useful because [a-z[0-9]] describes the same set as
+[a-z0-9]. However, character classes also support the
+&& operator which performs set intersection on its
+arguments. The two can be combined as follows:
+
+/[a-w&&[^c-g]z]/ # ([a-w] AND ([^c-g] OR z))
+
+
+This is equivalent to:
+
+/[abh-w]/
+
+
+The following metacharacters also behave like character classes:
+
+/./ - Any character except a newline.
+
+/./m - Any character (the m modifier enables
+multiline mode)
+
+/\w/ - A word character ([a-zA-Z0-9_])
+
+/\W/ - A non-word character ([^a-zA-Z0-9_]).
+Please take a look at Bug
+#4044 if using /\W/ with the /i modifier.
+
+/\d/ - A digit character ([0-9])
+
+/\D/ - A non-digit character ([^0-9])
+
+/\h/ - A hexdigit character ([0-9a-fA-F])
+
+/\H/ - A non-hexdigit character ([^0-9a-fA-F])
+
+/\s/ - A whitespace character: /[ \t\r\n\f\v]/
+
+/\S/ - A non-whitespace character: /[^
+\t\r\n\f\v]/
+
+
+POSIX bracket expressions are also similar to character classes.
+They provide a portable alternative to the above, with the added benefit
+that they encompass non-ASCII characters. For instance, /\d/
+matches only the ASCII decimal digits (0-9); whereas
+/[[:digit:]]/ matches any character in the Unicode Nd
+category.
+
+/[[:alnum:]]/ - Alphabetic and numeric character
+
+/[[:alpha:]]/ - Alphabetic character
+
+/[[:blank:]]/ - Space or tab
+
+/[[:cntrl:]]/ - Control character
+
+/[[:digit:]]/ - Digit
+
+/[[:graph:]]/ - Non-blank character (excludes spaces, control
+characters, and similar)
+
+/[[:lower:]]/ - Lowercase alphabetical character
+
+/[[:print:]]/ - Like [:graph:], but includes the space
+character
+
+/[[:punct:]]/ - Punctuation character
+
+/[[:space:]]/ - Whitespace character ([:blank:],
+newline, carriage return, etc.)
+
+/[[:upper:]]/ - Uppercase alphabetical
+
+/[[:xdigit:]]/ - Digit allowed in a hexadecimal number (i.e.,
+0-9a-fA-F)
+
+
+Ruby also supports the following non-POSIX character classes:
+
+/[[:word:]]/ - A character in one of the following Unicode
+general categories Letter, Mark, Number,
+Connector_Punctuation
+
+/[[:ascii:]]/ - A character in the ASCII character set
+
+# U+06F2 is ""EXTENDED ARABIC-INDIC DIGIT TWO""
+/[[:digit:]]/.match(""\u06F2"")    #=> #<MatchData ""\u{06F2}"">
+/[[:upper:]][[:lower:]]/.match(""Hello"") #=> #<MatchData ""He"">
+/[[:xdigit:]][[:xdigit:]]/.match(""A6"")  #=> #<MatchData ""A6"">
+
+
+
+Repetition¶ ↑
+
+The constructs described so far match a single character. They can be
+followed by a repetition metacharacter to specify how many times they need
+to occur. Such metacharacters are called quantifiers.
+
+* - Zero or more times
+
++ - One or more times
+
+? - Zero or one times (optional)
+
+{n} - Exactly n times
+
+{n,} - n or more times
+
+{,m} - m or less times
+
+{n,m} - At least
+n and at most m times
+
+
+At least one uppercase character (‘H’), at least one lowercase character
+(‘e’), two ‘l’ characters, then one ‘o’:
+
+""Hello"".match(/[[:upper:]]+[[:lower:]]+l{2}o/) #=> #<MatchData ""Hello"">
+
+
+Repetition is greedy by default: as many occurrences as possible
+are matched while still allowing the overall match to succeed. By contrast,
+lazy matching makes the minimal amount of matches necessary for
+overall success. A greedy metacharacter can be made lazy by following it
+with ?.
+
+Both patterns below match the string. The first uses a greedy quantifier so
+‘.+’ matches ‘<a><b>’; the second uses a lazy quantifier so
+‘.+?’ matches ‘<a>’:
+
+/<.+>/.match(""<a><b>"")  #=> #<MatchData ""<a><b>"">
+/<.+?>/.match(""<a><b>"") #=> #<MatchData ""<a>"">
+
+
+A quantifier followed by + matches possessively: once
+it has matched it does not backtrack. They behave like greedy quantifiers,
+but having matched they refuse to “give up” their match even if this
+jeopardises the overall match.
+
+Capturing¶ ↑
+
+Parentheses can be used for capturing. The text enclosed by the
+n<sup>th</sup> group of parentheses can be
+subsequently referred to with n. Within a pattern use the
+backreference \n; outside of the pattern use
+MatchData[n].
+
+‘at’ is captured by the first group of parentheses, then referred to later
+with \1:
+
+/[csh](..) [csh]\1 in/.match(""The cat sat in the hat"")
+    #=> #<MatchData ""cat sat in"" 1:""at"">
+
+
+#match returns a MatchData object which makes the captured text
+available with its [] method:
+
+/[csh](..) [csh]\1 in/.match(""The cat sat in the hat"")[1] #=> 'at'
+
+
+Capture groups can be referred to by name when defined with the
+(?<name>) or
+(?'name') constructs.
+
+/\$(?<dollars>\d+)\.(?<cents>\d+)/.match(""$3.67"")
+    => #<MatchData ""$3.67"" dollars:""3"" cents:""67"">
+/\$(?<dollars>\d+)\.(?<cents>\d+)/.match(""$3.67"")[:dollars] #=> ""3""
+
+Named groups can be backreferenced with
+\k<name>, where name is
+the group name.
+
+/(?<vowel>[aeiou]).\k<vowel>.\k<vowel>/.match('ototomy')
+    #=> #<MatchData ""ototo"" vowel:""o"">
+
+
+Note: A regexp can't use named backreferences and numbered
+backreferences simultaneously.
+
+When named capture groups are used with a literal regexp on the left-hand
+side of an expression and the =~ operator, the captured text
+is also assigned to local variables with corresponding names.
+
+/\$(?<dollars>\d+)\.(?<cents>\d+)/ =~ ""$3.67"" #=> 0
+dollars #=> ""3""
+
+
+Grouping¶ ↑
+
+Parentheses also group the terms they enclose, allowing them to be
+quantified as one atomic whole.
+
+The pattern below matches a vowel followed by 2 word characters:
+
+/[aeiou]\w{2}/.match(""Caenorhabditis elegans"") #=> #<MatchData ""aen"">
+
+
+Whereas the following pattern matches a vowel followed by a word character,
+twice, i.e. [aeiou]\w[aeiou]\w: ‘enor’.
+
+/([aeiou]\w){2}/.match(""Caenorhabditis elegans"")
+    #=> #<MatchData ""enor"" 1:""or"">
+
+
+The (?:…) construct provides grouping without
+capturing. That is, it combines the terms it contains into an atomic whole
+without creating a backreference. This benefits performance at the slight
+expense of readability.
+
+The first group of parentheses captures ‘n’ and the second ‘ti’. The second
+group is referred to later with the backreference \2:
+
+/I(n)ves(ti)ga\2ons/.match(""Investigations"")
+    #=> #<MatchData ""Investigations"" 1:""n"" 2:""ti"">
+
+
+The first group of parentheses is now made non-capturing with ‘?:’, so it
+still matches ‘n’, but doesn’t create the backreference. Thus, the
+backreference \1 now refers to ‘ti’.
+
+/I(?:n)ves(ti)ga\1ons/.match(""Investigations"")
+    #=> #<MatchData ""Investigations"" 1:""ti"">
+
+
+Atomic Grouping¶ ↑
+
+Grouping can be made atomic with
+(?>pat). This causes the
+subexpression pat to be matched independently of the rest of the
+expression such that what it matches becomes fixed for the remainder of the
+match, unless the entire subexpression must be abandoned and subsequently
+revisited. In this way pat is treated as a non-divisible whole.
+Atomic grouping is typically used to optimise patterns so as to prevent the
+regular expression engine from backtracking needlessly.
+
+The "" in the pattern below matches the first character of
+the string, then .* matches Quote“. This causes the
+overall match to fail, so the text matched by .* is
+backtracked by one position, which leaves the final character of the string
+available to match ""
+
+/"".*""/.match('""Quote""')     #=> #<MatchData ""\""Quote\"""">
+
+
+If .* is grouped atomically, it refuses to backtrack
+Quote“, even though this means that the overall match fails
+
+/""(?>.*)""/.match('""Quote""') #=> nil
+
+
+Subexpression Calls¶ ↑
+
+The \g<name> syntax matches the
+previous subexpression named name, which can be a group name or
+number, again. This differs from backreferences in that it re-executes the
+group rather than simply trying to re-match the same text.
+
+This pattern matches a ( character and assigns it to the
+paren group, tries to call that the paren
+sub-expression again but fails, then matches a literal ):
+
+/\A(?<paren>\(\g<paren>*\))*\z/ =~ '()'
+
+/\A(?<paren>\(\g<paren>*\))*\z/ =~ '(())' #=> 0
+# ^1
+#      ^2
+#           ^3
+#                 ^4
+#      ^5
+#           ^6
+#                      ^7
+#                       ^8
+#                       ^9
+#                           ^10
+
+
+Matches at the beginning of the string, i.e. before the first character.
+
+Enters a named capture group called paren
+
+Matches a literal (, the first character in the string
+
+Calls the paren group again, i.e. recurses back to the second
+step
+
+Re-enters the paren group
+
+Matches a literal (, the second character in the string
+
+Try to call paren a third time, but fail because doing so
+would prevent an overall successful match
+
+Match a literal ), the third character in the string. Marks the
+end of the second recursive call
+
+Match a literal ), the fourth character in the string
+
+Match the end of the string
+
+
+Alternation¶ ↑
+
+The vertical bar metacharacter (|) combines two expressions
+into a single one that matches either of the expressions. Each expression
+is an alternative.
+
+/\w(and|or)\w/.match(""Feliformia"") #=> #<MatchData ""form"" 1:""or"">
+/\w(and|or)\w/.match(""furandi"")    #=> #<MatchData ""randi"" 1:""and"">
+/\w(and|or)\w/.match(""dissemblance"") #=> nil
+
+
+Character Properties¶ ↑
+
+The \p{} construct matches characters with the named property,
+much like POSIX bracket classes.
+
+/\p{Alnum}/ - Alphabetic and numeric character
+
+/\p{Alpha}/ - Alphabetic character
+
+/\p{Blank}/ - Space or tab
+
+/\p{Cntrl}/ - Control character
+
+/\p{Digit}/ - Digit
+
+/\p{Graph}/ - Non-blank character (excludes spaces, control
+characters, and similar)
+
+/\p{Lower}/ - Lowercase alphabetical character
+
+/\p{Print}/ - Like \p{Graph}, but includes the
+space character
+
+/\p{Punct}/ - Punctuation character
+
+/\p{Space}/ - Whitespace character ([:blank:],
+newline, carriage return, etc.)
+
+/\p{Upper}/ - Uppercase alphabetical
+
+/\p{XDigit}/ - Digit allowed in a hexadecimal number (i.e.,
+0-9a-fA-F)
+
+/\p{Word}/ - A member of one of the following Unicode general
+category Letter, Mark, Number,
+Connector_Punctuation
+
+/\p{ASCII}/ - A character in the ASCII character set
+
+/\p{Any}/ - Any Unicode character (including unassigned
+characters)
+
+/\p{Assigned}/ - An assigned character
+
+
+A Unicode character’s General Category value can also be matched
+with \p{Ab} where Ab is the
+category’s abbreviation as described below:
+
+/\p{L}/ - 'Letter'
+
+/\p{Ll}/ - 'Letter: Lowercase'
+
+/\p{Lm}/ - 'Letter: Mark'
+
+/\p{Lo}/ - 'Letter: Other'
+
+/\p{Lt}/ - 'Letter: Titlecase'
+
+/\p{Lu}/ - 'Letter: Uppercase
+
+/\p{Lo}/ - 'Letter: Other'
+
+/\p{M}/ - 'Mark'
+
+/\p{Mn}/ - 'Mark: Nonspacing'
+
+/\p{Mc}/ - 'Mark: Spacing Combining'
+
+/\p{Me}/ - 'Mark: Enclosing'
+
+/\p{N}/ - 'Number'
+
+/\p{Nd}/ - 'Number: Decimal Digit'
+
+/\p{Nl}/ - 'Number: Letter'
+
+/\p{No}/ - 'Number: Other'
+
+/\p{P}/ - 'Punctuation'
+
+/\p{Pc}/ - 'Punctuation: Connector'
+
+/\p{Pd}/ - 'Punctuation: Dash'
+
+/\p{Ps}/ - 'Punctuation: Open'
+
+/\p{Pe}/ - 'Punctuation: Close'
+
+/\p{Pi}/ - 'Punctuation: Initial Quote'
+
+/\p{Pf}/ - 'Punctuation: Final Quote'
+
+/\p{Po}/ - 'Punctuation: Other'
+
+/\p{S}/ - 'Symbol'
+
+/\p{Sm}/ - 'Symbol: Math'
+
+/\p{Sc}/ - 'Symbol: Currency'
+
+/\p{Sc}/ - 'Symbol: Currency'
+
+/\p{Sk}/ - 'Symbol: Modifier'
+
+/\p{So}/ - 'Symbol: Other'
+
+/\p{Z}/ - 'Separator'
+
+/\p{Zs}/ - 'Separator: Space'
+
+/\p{Zl}/ - 'Separator: Line'
+
+/\p{Zp}/ - 'Separator: Paragraph'
+
+/\p{C}/ - 'Other'
+
+/\p{Cc}/ - 'Other: Control'
+
+/\p{Cf}/ - 'Other: Format'
+
+/\p{Cn}/ - 'Other: Not Assigned'
+
+/\p{Co}/ - 'Other: Private Use'
+
+/\p{Cs}/ - 'Other: Surrogate'
+
+
+Lastly, \p{} matches a character’s Unicode script.
+The following scripts are supported: Arabic, Armenian,
+Balinese, Bengali, Bopomofo, Braille,
+Buginese, Buhid, Canadian_Aboriginal,
+Carian, Cham, Cherokee, Common,
+Coptic, Cuneiform, Cypriot, Cyrillic,
+Deseret, Devanagari, Ethiopic,
+Georgian, Glagolitic, Gothic, Greek,
+Gujarati, Gurmukhi, Han, Hangul,
+Hanunoo, Hebrew, Hiragana, Inherited,
+Kannada, Katakana, Kayah_Li,
+Kharoshthi, Khmer, Lao, Latin,
+Lepcha, Limbu, Linear_B, Lycian,
+Lydian, Malayalam, Mongolian, Myanmar,
+New_Tai_Lue, Nko, Ogham, Ol_Chiki,
+Old_Italic, Old_Persian, Oriya,
+Osmanya, Phags_Pa, Phoenician, Rejang,
+Runic, Saurashtra, Shavian, Sinhala,
+Sundanese, Syloti_Nagri, Syriac,
+Tagalog, Tagbanwa, Tai_Le, Tamil,
+Telugu, Thaana, Thai, Tibetan,
+Tifinagh, Ugaritic, Vai, and Yi.
+
+Unicode codepoint U+06E9 is named “ARABIC PLACE OF SAJDAH” and belongs to
+the Arabic script:
+
+/\p{Arabic}/.match(""\u06E9"") #=> #<MatchData ""\u06E9"">
+
+All character properties can be inverted by prefixing their name with a
+caret (^).
+
+Letter ‘A’ is not in the Unicode Ll (Letter; Lowercase) category, so this
+match succeeds:
+
+/\p{^Ll}/.match(""A"") #=> #<MatchData ""A"">
+
+Anchors¶ ↑
+
+Anchors are metacharacter that match the zero-width positions between
+characters, anchoring the match to a specific position.
+
+^ - Matches beginning of line
+
+$ - Matches end of line
+
+\A - Matches beginning of string.
+
+\Z - Matches end of string. If string ends with a newline, it
+matches just before newline
+
+\z - Matches end of string
+
+\G - Matches first matching position:
+
+In methods like String#gsub and String#scan, it
+changes on each iteration. It initially matches the beginning of subject,
+and in each following iteration it matches where the last match finished.
+
+""    a b c"".gsub(/ /, '_')    #=> ""____a_b_c""
+""    a b c"".gsub(/\G /, '_')  #=> ""____a b c""
+
+
+In methods like Regexp#match and String#match
+that take an (optional) offset, it matches where the search begins.
+
+""hello, world"".match(/,/, 3)    #=> #<MatchData "","">
+""hello, world"".match(/\G,/, 3)  #=> nil
+
+
+\b - Matches word boundaries when outside brackets; backspace
+(0x08) when inside brackets
+
+\B - Matches non-word boundaries
+
+(?=pat) - Positive lookahead
+assertion: ensures that the following characters match pat, but
+doesn't include those characters in the matched text
+
+(?!pat) - Negative lookahead
+assertion: ensures that the following characters do not match pat,
+but doesn't include those characters in the matched text
+
+(?<=pat) - Positive
+lookbehind assertion: ensures that the preceding characters match
+pat, but doesn't include those characters in the matched text
+
+(?<!pat) - Negative
+lookbehind assertion: ensures that the preceding characters do not
+match pat, but doesn't include those characters in the matched
+text
+
+
+If a pattern isn’t anchored it can begin at any point in the string:
+
+/real/.match(""surrealist"") #=> #<MatchData ""real"">
+
+
+Anchoring the pattern to the beginning of the string forces the match to
+start there. ‘real’ doesn’t occur at the beginning of the string, so now
+the match fails:
+
+/\Areal/.match(""surrealist"") #=> nil
+
+
+The match below fails because although ‘Demand’ contains ‘and’, the pattern
+does not occur at a word boundary.
+
+/\band/.match(""Demand"")
+
+
+Whereas in the following example ‘and’ has been anchored to a non-word
+boundary so instead of matching the first ‘and’ it matches from the fourth
+letter of ‘demand’ instead:
+
+/\Band.+/.match(""Supply and demand curve"") #=> #<MatchData ""and curve"">
+
+
+The pattern below uses positive lookahead and positive lookbehind to match
+text appearing in  tags without including the tags in the match:
+
+/(?<=<b>)\w+(?=<\/b>)/.match(""Fortune favours the <b>bold</b>"")
+    #=> #<MatchData ""bold"">
+
+
+Options¶ ↑
+
+The end delimiter for a regexp can be followed by one or more single-letter
+options which control how the pattern can match.
+
+/pat/i - Ignore case
+
+/pat/m - Treat a newline as a character matched by
+.
+
+/pat/x - Ignore whitespace and comments in the pattern
+
+/pat/o - Perform #{} interpolation only once
+
+
+i, m, and x can also be applied on
+the subexpression level with the
+(?on-off)
+construct, which enables options on, and disables options
+off for the expression enclosed by the parentheses.
+
+/a(?i:b)c/.match('aBc') #=> #<MatchData ""aBc"">
+/a(?i:b)c/.match('abc') #=> #<MatchData ""abc"">
+
+
+Options may also be used with Regexp.new:
+
+Regexp.new(""abc"", Regexp::IGNORECASE)                     #=> /abc/i
+Regexp.new(""abc"", Regexp::MULTILINE)                      #=> /abc/m
+Regexp.new(""abc # Comment"", Regexp::EXTENDED)             #=> /abc # Comment/x
+Regexp.new(""abc"", Regexp::IGNORECASE | Regexp::MULTILINE) #=> /abc/mi
+
+
+Free-Spacing Mode and Comments¶ ↑
+
+As mentioned above, the x option enables free-spacing
+mode. Literal white space inside the pattern is ignored, and the octothorpe
+(#) character introduces a comment until the end of the line.
+This allows the components of the pattern to be organized in a potentially
+more readable fashion.
+
+A contrived pattern to match a number with optional decimal places:
+
+float_pat = /\A
+    [[:digit:]]+ # 1 or more digits before the decimal point
+    (\.          # Decimal point
+        [[:digit:]]+ # 1 or more digits after the decimal point
+    )? # The decimal point and following digits are optional
+\Z/x
+float_pat.match('3.14') #=> #<MatchData ""3.14"" 1:"".14"">
+
+
+There are a number of strategies for matching whitespace:
+
+Use a pattern such as \s or \p{Space}.
+
+Use escaped whitespace such as \ , i.e. a space preceded by a
+backslash.
+
+Use a character class such as [ ].
+
+
+Comments can be included in a non-x pattern with the
+(?#comment) construct, where
+comment is arbitrary text ignored by the regexp engine.
+
+Comments in regexp literals cannot include unescaped terminator characters.
+
+Encoding¶ ↑
+
+Regular expressions are assumed to use the source encoding. This can be
+overridden with one of the following modifiers.
+
+/pat/u - UTF-8
+
+/pat/e - EUC-JP
+
+/pat/s - Windows-31J
+
+/pat/n - ASCII-8BIT
+
+
+A regexp can be matched against a string when they either share an
+encoding, or the regexp’s encoding is US-ASCII and the string’s
+encoding is ASCII-compatible.
+
+If a match between incompatible encodings is attempted an
+Encoding::CompatibilityError exception is raised.
+
+The Regexp#fixed_encoding? predicate indicates whether the
+regexp has a fixed encoding, that is one incompatible with ASCII.
+A regexp’s encoding can be explicitly fixed by supplying
+Regexp::FIXEDENCODING as the second argument of
+Regexp.new:
+
+r = Regexp.new(""a"".force_encoding(""iso-8859-1""),Regexp::FIXEDENCODING)
+r =~""a\u3042""
+   #=> Encoding::CompatibilityError: incompatible encoding regexp match
+        (ISO-8859-1 regexp with UTF-8 string)
+
+Special global variables¶ ↑
+
+Pattern matching sets some global variables :
+
+$~ is equivalent to ::last_match;
+
+$& contains the complete matched text;
+
+$` contains string before match;
+
+$' contains string after match;
+
+$1, $2 and so on contain text matching first,
+second, etc capture group;
+
+$+ contains last capture group.
+
+
+Example:
+
+m = /s(\w{2}).*(c)/.match('haystack') #=> #<MatchData ""stac"" 1:""ta"" 2:""c"">
+$~                                    #=> #<MatchData ""stac"" 1:""ta"" 2:""c"">
+Regexp.last_match                     #=> #<MatchData ""stac"" 1:""ta"" 2:""c"">
+
+$&      #=> ""stac""
+        # same as m[0]
+$`      #=> ""hay""
+        # same as m.pre_match
+$'      #=> ""k""
+        # same as m.post_match
+$1      #=> ""ta""
+        # same as m[1]
+$2      #=> ""c""
+        # same as m[2]
+$3      #=> nil
+        # no third group in pattern
+$+      #=> ""c""
+        # same as m[-1]
+
+
+These global variables are thread-local and method-local variables.
+
+Performance¶ ↑
+
+Certain pathological combinations of constructs can lead to abysmally bad
+performance.
+
+Consider a string of 25 as, a d, 4 as, and a
+c.
+
+s = 'a' * 25 + 'd' + 'a' * 4 + 'c'
+#=> ""aaaaaaaaaaaaaaaaaaaaaaaaadaaaac""
+
+
+The following patterns match instantly as you would expect:
+
+/(b|a)/ =~ s #=> 0
+/(b|a+)/ =~ s #=> 0
+/(b|a+)*/ =~ s #=> 0
+
+
+However, the following pattern takes appreciably longer:
+
+/(b|a+)*c/ =~ s #=> 26
+
+
+This happens because an atom in the regexp is quantified by both an
+immediate + and an enclosing * with nothing to
+differentiate which is in control of any particular character. The
+nondeterminism that results produces super-linear performance. (Consult
+Mastering Regular Expressions (3rd ed.), pp 222, by Jeffery
+Friedl, for an in-depth analysis). This particular case can be fixed
+by use of atomic grouping, which prevents the unnecessary backtracking:
+
+(start = Time.now) && /(b|a+)*c/ =~ s && (Time.now - start)
+   #=> 24.702736882
+(start = Time.now) && /(?>b|a+)*c/ =~ s && (Time.now - start)
+   #=> 0.000166571
+
+
+A similar case is typified by the following example, which takes
+approximately 60 seconds to execute for me:
+
+Match a string of 29 as against a pattern of 29 optional
+as followed by 29 mandatory as:
+
+Regexp.new('a?' * 29 + 'a' * 29) =~ 'a' * 29
+
+
+The 29 optional as match the string, but this prevents the 29
+mandatory as that follow from matching. Ruby must then backtrack
+repeatedly so as to satisfy as many of the optional matches as it can while
+still matching the mandatory 29. It is plain to us that none of the
+optional matches can succeed, but this fact unfortunately eludes Ruby.
+
+The best way to improve performance is to significantly reduce the amount
+of backtracking needed.  For this case, instead of individually matching 29
+optional as, a range of optional as can be matched all at
+once with a{0,29}:
+
+Regexp.new('a{0,29}' + 'a' * 29) =~ 'a' * 29
+
+
+    "
+RegexpError,"
+      
+Raised when given an invalid regexp expression.
+
+Regexp.new(""?"")
+
+
+raises the exception:
+
+RegexpError: target of repeat operator is not specified: /?/
+
+    "
+RubyVM,"
+      
+::RubyVM
+
+    "
+RubyVM::InstructionSequence,"
+      
+The InstructionSequence class
+represents a compiled sequence of instructions for the Ruby Virtual
+Machine.
+
+With it, you can get a handle to the instructions that make up a method or
+a proc, compile strings of Ruby code down to VM instructions, and
+disassemble instruction sequences to strings for easy inspection. It is
+mostly useful if you want to learn how the Ruby VM works, but it also lets
+you control various settings for the Ruby iseq compiler.
+
+You can find the source for the VM instructions in insns.def
+in the Ruby source.
+
+The instruction sequence results will almost certainly change as Ruby
+changes, so example output in this documentation may be different from what
+you see.
+
+    "
+RuntimeError,"
+      
+A generic error class raised when an invalid operation is attempted.
+
+[1, 2, 3].freeze << 4
+
+
+raises the exception:
+
+RuntimeError: can't modify frozen Array
+
+Kernel#raise will raise a RuntimeError if no Exception class is specified.
+
+raise ""ouch""
+
+
+raises the exception:
+
+RuntimeError: ouch
+
+    "
+ScriptError,"
+      
+ScriptError is the superclass for errors
+raised when a script can not be executed because of a
+LoadError, NotImplementedError or a
+SyntaxError. Note these type of ScriptErrors are
+not StandardError and will not be rescued unless it is
+specified explicitly (or its ancestor Exception).
+
+    "
+SecurityError,"
+      
+Raised when attempting a potential unsafe operation, typically when the
+$SAFE level is raised above 0.
+
+foo = ""bar""
+proc = Proc.new do
+  $SAFE = 3
+  foo.untaint
+end
+proc.call
+
+
+raises the exception:
+
+SecurityError: Insecure: Insecure operation `untaint' at level 3
+
+    "
+SignalException,"
+      
+Raised when a signal is received.
+
+begin
+  Process.kill('HUP',Process.pid)
+  sleep # wait for receiver to handle signal sent by Process.kill
+rescue SignalException => e
+  puts ""received Exception #{e}""
+end
+
+
+produces:
+
+received Exception SIGHUP
+
+
+    "
+SizedQueue,"
+      
+This class represents queues of specified size capacity.  The push
+operation may be blocked if the capacity is full.
+
+See Queue for an example of how a SizedQueue works.
+
+    "
+StandardError,"
+      
+The most standard error types are subclasses of StandardError. A rescue clause without an
+explicit Exception class will rescue all
+StandardErrors (and only those).
+
+def foo
+  raise ""Oups""
+end
+foo rescue ""Hello""   #=> ""Hello""
+
+
+On the other hand:
+
+require 'does/not/exist' rescue ""Hi""
+
+
+raises the exception:
+
+LoadError: no such file to load -- does/not/exist
+
+    "
+StopIteration,"
+      
+Raised to stop the iteration, in particular by Enumerator#next. It is rescued by
+Kernel#loop.
+
+loop do
+  puts ""Hello""
+  raise StopIteration
+  puts ""World""
+end
+puts ""Done!""
+
+
+produces:
+
+Hello
+Done!
+
+
+    "
+String,"
+      
+A String object holds and manipulates an arbitrary sequence of
+bytes, typically representing characters. String
+objects may be created using String::new or as literals.
+
+Because of aliasing issues, users of strings should be aware of the methods
+that modify the contents of a String object.  Typically,
+methods with names ending in “!” modify their receiver, while those without
+a “!” return a new String.  However, there are exceptions,
+such as String#[]=.
+
+    "
+Struct,"
+      
+A Struct is a convenient way to bundle a number
+of attributes together, using accessor methods, without having to write an
+explicit class.
+
+The Struct class generates new subclasses that
+hold a set of members and their values.  For each member a reader and
+writer method is created similar to Module#attr_accessor.
+
+Customer = Struct.new(:name, :address) do
+  def greeting
+    ""Hello #{name}!""
+  end
+end
+
+dave = Customer.new(""Dave"", ""123 Main"")
+dave.name     #=> ""Dave""
+dave.greeting #=> ""Hello Dave!""
+
+
+See ::new for further examples of
+creating struct subclasses and instances.
+
+In the method descriptions that follow, a ""member"" parameter refers to a
+struct member which is either a quoted string
+(""name"") or a Symbol
+(:name).
+
+    "
+Symbol,"
+      
+Symbol objects represent names and some strings inside the
+Ruby interpreter. They are generated using the :name and
+:""string"" literals syntax, and by the various
+to_sym methods. The same Symbol object will be
+created for a given name or string for the duration of a program's
+execution, regardless of the context or meaning of that name. Thus if
+Fred is a constant in one context, a method in another, and a
+class in a third, the Symbol :Fred will be the
+same object in all three contexts.
+
+module One
+  class Fred
+  end
+  $f1 = :Fred
+end
+module Two
+  Fred = 1
+  $f2 = :Fred
+end
+def Fred()
+end
+$f3 = :Fred
+$f1.object_id   #=> 2514190
+$f2.object_id   #=> 2514190
+$f3.object_id   #=> 2514190
+
+
+    "
+SyntaxError,"
+      
+Raised when encountering Ruby code with an invalid syntax.
+
+eval(""1+1=2"")
+
+
+raises the exception:
+
+SyntaxError: (eval):1: syntax error, unexpected '=', expecting $end
+
+    "
+SystemCallError,"
+      
+SystemCallError is the base class for
+all low-level platform-dependent errors.
+
+The errors available on the current platform are subclasses of SystemCallError and are defined in the Errno module.
+
+File.open(""does/not/exist"")
+
+
+raises the exception:
+
+Errno::ENOENT: No such file or directory - does/not/exist
+
+    "
+SystemExit,"
+      
+Raised by exit to initiate the termination of the script.
+
+    "
+SystemStackError,"
+      
+Raised in case of a stack overflow.
+
+def me_myself_and_i
+  me_myself_and_i
+end
+me_myself_and_i
+
+
+raises the exception:
+
+SystemStackError: stack level too deep
+
+    "
+Thread,"
+      
+Threads are the Ruby implementation for a concurrent programming model.
+
+Programs that require multiple threads of execution are a perfect candidate
+for Ruby's Thread class.
+
+For example, we can create a new thread separate from the main thread's
+execution using ::new.
+
+thr = Thread.new { puts ""Whats the big deal"" }
+
+
+Then we are able to pause the execution of the main thread and allow our
+new thread to finish, using join:
+
+thr.join #=> ""Whats the big deal""
+
+
+If we don't call thr.join before the main thread terminates,
+then all other threads including thr will be killed.
+
+Alternatively, you can use an array for handling multiple threads at once,
+like in the following example:
+
+threads = []
+threads << Thread.new { puts ""Whats the big deal"" }
+threads << Thread.new { 3.times { puts ""Threads are fun!"" } }
+
+
+After creating a few threads we wait for them all to finish consecutively.
+
+threads.each { |thr| thr.join }
+
+
+Thread initialization¶ ↑
+
+In order to create new threads, Ruby provides ::new, ::start, and ::fork. A block must be provided with
+each of these methods, otherwise a ThreadError will be raised.
+
+When subclassing the Thread class, the
+initialize method of your subclass will be ignored by ::start and ::fork. Otherwise, be sure to call
+super in your initialize method.
+
+Thread termination¶ ↑
+
+For terminating threads, Ruby provides a variety of ways to do this.
+
+The class method ::kill, is meant
+to exit a given thread:
+
+thr = Thread.new { ... }
+Thread.kill(thr) # sends exit() to thr
+
+Alternatively, you can use the instance method exit, or any of its aliases kill or terminate.
+
+thr.exit
+
+
+Thread status¶ ↑
+
+Ruby provides a few instance methods for querying the state of a given
+thread. To get a string with the current thread's state use status
+
+thr = Thread.new { sleep }
+thr.status # => ""sleep""
+thr.exit
+thr.status # => false
+
+
+You can also use alive? to tell
+if the thread is running or sleeping, and stop? if the thread is dead or
+sleeping.
+
+Thread variables and scope¶ ↑
+
+Since threads are created with blocks, the same rules apply to other Ruby
+blocks for variable scope. Any local variables created within this block
+are accessible to only this thread.
+
+Fiber-local vs. Thread-local¶ ↑
+
+Each fiber has its own bucket for #[] storage. When you set a new
+fiber-local it is only accessible within this Fiber. To illustrate:
+
+Thread.new {
+  Thread.current[:foo] = ""bar""
+  Fiber.new {
+    p Thread.current[:foo] # => nil
+  }.resume
+}.join
+
+
+This example uses [] for getting
+and []= for setting
+fiber-locals, you can also use keys
+to list the fiber-locals for a given thread and key? to check if a fiber-local
+exists.
+
+When it comes to thread-locals, they are accessible within the entire scope
+of the thread. Given the following example:
+
+Thread.new{
+  Thread.current.thread_variable_set(:foo, 1)
+  p Thread.current.thread_variable_get(:foo) # => 1
+  Fiber.new{
+    Thread.current.thread_variable_set(:foo, 2)
+    p Thread.current.thread_variable_get(:foo) # => 2
+  }.resume
+  p Thread.current.thread_variable_get(:foo)   # => 2
+}.join
+
+
+You can see that the thread-local :foo carried over into the
+fiber and was changed to 2 by the end of the thread.
+
+This example makes use of thread_variable_set to
+create new thread-locals, and thread_variable_get to
+reference them.
+
+There is also thread_variables to list
+all thread-locals, and thread_variable? to
+check if a given thread-local exists.
+
+Exception handling¶ ↑
+
+Any thread can raise an exception using the raise instance method, which operates
+similarly to Kernel#raise.
+
+However, it's important to note that an exception that occurs in any thread
+except the main thread depends on abort_on_exception. This
+option is false by default, meaning that any unhandled
+exception will cause the thread to terminate silently when waited on by
+either join or value. You can change this default by
+either abort_on_exception=
+true or setting $DEBUG to true.
+
+With the addition of the class method ::handle_interrupt, you
+can now handle exceptions asynchronously with threads.
+
+Scheduling¶ ↑
+
+Ruby provides a few ways to support scheduling threads in your program.
+
+The first way is by using the class method ::stop, to put the current running
+thread to sleep and schedule the execution of another thread.
+
+Once a thread is asleep, you can use the instance method wakeup to mark your thread as
+eligible for scheduling.
+
+You can also try ::pass, which
+attempts to pass execution to another thread but is dependent on the OS
+whether a running thread will switch or not. The same goes for priority, which lets you hint to
+the thread scheduler which threads you want to take precedence when passing
+execution. This method is also dependent on the OS and may be ignored on
+some platforms.
+
+    "
+Thread::Backtrace,"
+      
+    "
+Thread::Backtrace::Location,"
+      
+An object representation of a stack frame, initialized by Kernel#caller_locations.
+
+For example:
+
+# caller_locations.rb
+def a(skip)
+  caller_locations(skip)
+end
+def b(skip)
+  a(skip)
+end
+def c(skip)
+  b(skip)
+end
+
+c(0..2).map do |call|
+  puts call.to_s
+end
+
+
+Running ruby caller_locations.rb will produce:
+
+caller_locations.rb:2:in `a'
+caller_locations.rb:5:in `b'
+caller_locations.rb:8:in `c'
+
+Here’s another example with a slightly different result:
+
+# foo.rb
+class Foo
+  attr_accessor :locations
+  def initialize(skip)
+    @locations = caller_locations(skip)
+  end
+end
+
+Foo.new(0..2).locations.map do |call|
+  puts call.to_s
+end
+
+
+Now run ruby foo.rb and you should see:
+
+init.rb:4:in `initialize'
+init.rb:8:in `new'
+init.rb:8:in `<main>'
+
+    "
+Thread::Mutex,"
+      
+Mutex
+
+    "
+ThreadError,"
+      
+Raised when an invalid operation is attempted on a thread.
+
+For example, when no other thread has been started:
+
+Thread.stop
+
+
+This will raises the following exception:
+
+ThreadError: stopping only thread
+note: use sleep to stop forever
+
+    "
+ThreadGroup,"
+      
+ThreadGroup provides a means of keeping
+track of a number of threads as a group.
+
+A given Thread object can only belong to one ThreadGroup at a time; adding a thread to a new
+group will remove it from any previous group.
+
+Newly created threads belong to the same group as the thread from which
+they were created.
+
+    "
+Time,"
+      
+Time is an abstraction of dates and times. Time is stored internally as the number of seconds
+with fraction since the Epoch, January 1, 1970 00:00 UTC. Also see
+the library module Date. The Time class treats GMT
+(Greenwich Mean Time) and UTC (Coordinated
+Universal Time) as equivalent. GMT is the older way
+of referring to these baseline times but persists in the names of calls on
+POSIX systems.
+
+All times may have fraction. Be aware of this fact when comparing times
+with each other – times that are apparently equal when displayed may be
+different when compared.
+
+Since Ruby 1.9.2, Time implementation uses a signed
+63 bit integer, Bignum or Rational. The integer
+is a number of nanoseconds since the Epoch which can represent
+1823-11-12 to 2116-02-20. When Bignum or Rational is used (before 1823, after 2116, under
+nanosecond), Time works slower as when integer is
+used.
+
+Examples¶ ↑
+
+All of these examples were done using the EST timezone which is GMT-5.
+
+Creating a new Time instance¶ ↑
+
+You can create a new instance of Time with ::new. This will use the current system
+time. ::now is an alias for this. You
+can also pass parts of the time to ::new such as year, month, minute, etc.
+When you want to construct a time this way you must pass at least a year.
+If you pass the year with nothing else time will default to January 1 of
+that year at 00:00:00 with the current system timezone. Here are some
+examples:
+
+Time.new(2002)         #=> 2002-01-01 00:00:00 -0500
+Time.new(2002, 10)     #=> 2002-10-01 00:00:00 -0500
+Time.new(2002, 10, 31) #=> 2002-10-31 00:00:00 -0500
+Time.new(2002, 10, 31, 2, 2, 2, ""+02:00"") #=> 2002-10-31 02:02:02 +0200
+
+
+You can also use gm, local and utc to
+infer GMT, local and UTC timezones instead of using the current system
+setting.
+
+You can also create a new time using ::at which takes the number of seconds (or
+fraction of seconds) since the Unix Epoch.
+
+Time.at(628232400) #=> 1989-11-28 00:00:00 -0500
+
+
+Working with an instance of Time¶ ↑
+
+Once you have an instance of Time there is a
+multitude of things you can do with it. Below are some examples. For all of
+the following examples, we will work on the assumption that you have done
+the following:
+
+t = Time.new(1993, 02, 24, 12, 0, 0, ""+09:00"")
+
+
+Was that a monday?
+
+t.monday? #=> false
+
+
+What year was that again?
+
+t.year #=> 1993
+
+
+Was it daylight savings at the time?
+
+t.dst? #=> false
+
+
+What’s the day a year later?
+
+t + (60*60*24*365) #=> 1994-02-24 12:00:00 +0900
+
+
+How many seconds was that since the Unix Epoch?
+
+t.to_i #=> 730522800
+
+
+You can also do standard functions like compare two times.
+
+t1 = Time.new(2010)
+t2 = Time.new(2011)
+
+t1 == t2 #=> false
+t1 == t1 #=> true
+t1 <  t2 #=> true
+t1 >  t2 #=> false
+
+Time.new(2010,10,31).between?(t1, t2) #=> true
+
+
+    "
+TracePoint,"
+      
+A class that provides the functionality of Kernel#set_trace_func in a
+nice Object-Oriented API.
+
+Example¶ ↑
+
+We can use TracePoint to gather information
+specifically for exceptions:
+
+trace = TracePoint.new(:raise) do |tp|
+    p [tp.lineno, tp.event, tp.raised_exception]
+end
+#=> #<TracePoint:disabled>
+
+trace.enable
+#=> false
+
+0 / 0
+#=> [5, :raise, #<ZeroDivisionError: divided by 0>]
+
+
+Events¶ ↑
+
+If you don't specify the type of events you want to listen for, TracePoint will include all available events.
+
+Note do not depend on current event set, as this list is
+subject to change. Instead, it is recommended you specify the type of
+events you want to use.
+
+To filter what is traced, you can pass any of the following as
+events:
+:line
+
+execute code on a new line
+:class
+
+start a class or module definition
+:end
+
+finish a class or module definition
+:call
+
+call a Ruby method
+:return
+
+return from a Ruby method
+:c_call
+
+call a C-language routine
+:c_return
+
+return from a C-language routine
+:raise
+
+raise an exception
+:b_call
+
+event hook at block entry
+:b_return
+
+event hook at block ending
+:thread_begin
+
+event hook at thread beginning
+:thread_end
+
+event hook at thread ending
+:fiber_switch
+
+event hook at fiber switch
+
+
+    "
+TrueClass,"
+      
+The global value true is the only instance of class
+TrueClass and represents a logically true value in boolean
+expressions. The class provides operators allowing true to be
+used in logical expressions.
+
+    "
+TypeError,"
+      
+Raised when encountering an object that is not of the expected type.
+
+[1, 2, 3].first(""two"")
+
+
+raises the exception:
+
+TypeError: no implicit conversion of String into Integer
+
+    "
+UnboundMethod,"
+      
+Ruby supports two forms of objectified methods. Class Method is used to represent
+methods that are associated with a particular object: these method objects
+are bound to that object. Bound method objects for an object can be created
+using Object#method.
+
+Ruby also supports unbound methods; methods objects that are not associated
+with a particular object. These can be created either by calling
+Module#instance_method or by calling unbind on a
+bound method object. The result of both of these is an
+UnboundMethod object.
+
+Unbound methods can only be called after they are bound to an object. That
+object must be a kind_of? the method's original class.
+
+class Square
+  def area
+    @side * @side
+  end
+  def initialize(side)
+    @side = side
+  end
+end
+
+area_un = Square.instance_method(:area)
+
+s = Square.new(12)
+area = area_un.bind(s)
+area.call   #=> 144
+
+
+Unbound methods are a reference to the method at the time it was
+objectified: subsequent changes to the underlying class will not affect the
+unbound method.
+
+class Test
+  def test
+    :original
+  end
+end
+um = Test.instance_method(:test)
+class Test
+  def test
+    :modified
+  end
+end
+t = Test.new
+t.test            #=> :modified
+um.bind(t).call   #=> :original
+
+
+    "
+UncaughtThrowError,"
+      
+Raised when throw is called with a tag which does not
+have corresponding catch block.
+
+throw ""foo"", ""bar""
+
+
+raises the exception:
+
+UncaughtThrowError: uncaught throw ""foo""
+
+    "
+ZeroDivisionError,"
+      
+Raised when attempting to divide an integer by 0.
+
+42 / 0
+#=> ZeroDivisionError: divided by 0
+
+
+Note that only division by an exact 0 will raise the exception:
+
+42 /  0.0 #=> Float::INFINITY
+42 / -0.0 #=> -Float::INFINITY
+0  /  0.0 #=> NaN
+
+
+    "
+fatal,"
+      
+fatal is an Exception that is raised when ruby
+has encountered a fatal error and must exit.  You are not able to rescue
+fatal.
+
+    "
