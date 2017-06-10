@@ -12,7 +12,7 @@
 <h1> display Class cards below </h1>
 	<div class="">
 		<section class="">
-		<% x = rand(3..ClassListDataInfo.count) %>
+		<% x = rand(ClassListDataInfo.first.id..ClassListDataInfo.last.id) %>
 			<p> checking x value <%= x %> </p>
 			<% @class= ClassListDataInfo.find(x) %>
 			<h3> Class Name is: <%= @class.class_name %></h3>

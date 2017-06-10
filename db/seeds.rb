@@ -31,6 +31,21 @@ csv.each do |row|
 	c.save
 end
 
+MethodNameList.destroy_all
+
+file = File.join(Rails.root,'lib', 'seeds', 'data_hash_class_method.csv')
+Data12 = File.open(file)
+
+obj = MethodNameList.first
+
+CSV.foreach(Data12) do |row|
+	class_name, method_array_list = row
+	obj.method_name_hash[class_name] = method_array_list
+end
+obj.save
+
+
+
 =begin
 class_name_descrip_info_base = File.read(Rails.root.join('lib', 'seeds', 'class_description_hash_full.csv'))
 class_name_descrip_info = CSV.parse(class_name_descrip_info_base, :headers => true, :encoding => 'ISO-8859-1')
