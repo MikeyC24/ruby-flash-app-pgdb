@@ -26,7 +26,8 @@ default: &default
 
 development:
   <<: *default
-  database: ruby-flash-app-pgdb_development
+  #database: ruby-flash-app-pgdb_development
+  database: rfc_app_dev
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
@@ -60,7 +61,8 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: ruby-flash-app-pgdb_test
+  #database: ruby-flash-app-pgdb_test
+  database: rfc_app_dev
 
 # As with config/secrets.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -83,6 +85,7 @@ test:
 #
 production:
   <<: *default
-  database: ruby-flash-app-pgdb_production
+  #database: ruby-flash-app-pgdb_production
+  database: rfc_app_pro
   username: ruby-flash-app-pgdb
   password: <%= ENV['RUBY-FLASH-APP-PGDB_DATABASE_PASSWORD'] %>
