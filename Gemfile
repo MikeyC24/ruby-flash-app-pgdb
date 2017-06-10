@@ -32,6 +32,7 @@ gem 'jquery-rails'
 # gem 'redis', '~> 3.0'
 # Use ActiveModel has_secure_password
 gem 'bcrypt'
+gem 'pry-byebug'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

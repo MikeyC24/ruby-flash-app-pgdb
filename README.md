@@ -1,8 +1,8 @@
 known issues, bugs, and points
 
-1. bootstrap dropdown menu is not working on test local:host enviroment, for now have the links in dropdown menu set up on top
+1. bootstrap dropdown menu is not working on test local:host enviroment, for now have the links in dropdown menu set up on top SOLVED
 
-2.
+2. look into this for id integars reset ActiveRecord::Base.connection.reset_pk_sequence!('table_name')
 
 puma for testing/dev
 

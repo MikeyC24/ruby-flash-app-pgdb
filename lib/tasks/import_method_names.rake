@@ -1,4 +1,5 @@
 require 'csv'
+require 'pry-byebug'
 
 task :import_method_names, [:filename] => :environment do
 
@@ -9,9 +10,15 @@ task :import_method_names, [:filename] => :environment do
 	
     CSV.foreach(data) do |row|
         class_name, method_array_list = row
+        x = class_name
+        y = method_array_list
+        puts x
+        puts y
         #method_name_hash[class_name] = method_array_list
-        obj = MethodNameList.create.method_name_hash = {class_name_list: class_name, method_name_list: method_array_list}
-    	obj.save
+        method_name_hash1 = {class_name_list: x, method_name_list: y} 
+        obj = MethodNameList.create!(method_name_hash: method_name_hash1)
+        obj.save
+        #binding.pry  
     end
 
     #MethodNameList.create.method_name_hash = {class_name: "array1", method_name: ["array method", "array_method_2"]}

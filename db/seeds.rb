@@ -31,6 +31,7 @@ csv.each do |row|
 	c.save
 end
 
+=begin
 MethodNameList.destroy_all
 
 file = File.join(Rails.root,'lib', 'seeds', 'data_hash_class_method.csv')
@@ -44,7 +45,7 @@ CSV.foreach(Data12) do |row|
 end
 obj.save
 
-
+=end
 
 =begin
 class_name_descrip_info_base = File.read(Rails.root.join('lib', 'seeds', 'class_description_hash_full.csv'))
