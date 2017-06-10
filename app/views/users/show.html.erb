@@ -12,7 +12,7 @@
 <h1> display Class cards below </h1>
 	<div class="">
 		<section class="">
-		<% x = rand(1..ClassListDataInfo.all.count) %>
+		<% x = rand(3..ClassListDataInfo.count) %>
 			<p> checking x value <%= x %> </p>
 			<h3> Class Name is: </h3>
 			<p>  <%= ClassListDataInfo.find(x).class_name %> check name </p>
@@ -21,7 +21,7 @@
 			<button type="button" class="click-class" onclick="click">click</button>
 			<div id="card-refresh" class="hidden" >
 			Hidden
-			<p> hidden content line <%= ClassListDataInfo.find(1).class_name %> </p>
+			<p> hidden content line <%= ClassListDataInfo.find(3).class_name %> </p>
 			</div>
 			<p> card should rotate above </p>
 			</div>
