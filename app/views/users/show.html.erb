@@ -14,18 +14,36 @@
 		<section class="">
 		<% x = rand(3..ClassListDataInfo.count) %>
 			<p> checking x value <%= x %> </p>
-			<h3> Class Name is: </h3>
-			<p>  <%= ClassListDataInfo.find(x).class_name %> check name </p>
-			<p>  <%= ClassListDataInfo.find(x).class_name_description %> check descrip </p>
-			<p> checking for refreshing cards </p>
+			<% @class= ClassListDataInfo.find(x) %>
+			<h3> Class Name is: <%= @class.class_name %></h3>
+
+			
 			<button type="button" class="click-class" onclick="click">click</button>
+			<section>
 			<div id="card-refresh" class="hidden" >
-			Hidden
-			<p> hidden content line <%= ClassListDataInfo.find(3).class_name %> </p>
+			<p>Hidden</p>
 			</div>
-			<p> card should rotate above </p>
-			</div>
-		</section>
-	</div>
+			</section>
+		
 
 
+
+
+			<% if @class.class_name_description.blank? %>
+			<div class="class-info-empty">
+			<p> No class info</p>
+			</div>
+			<% else %>
+			<div class="not-empty">
+			<section>
+				<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#classinfo" area-expanded="false" aria-controls="#classinfo">
+				click here for class info
+				</button>
+				<div class="collapse" id="classinfo" aria-expanded="false">
+					<div style="font-size:14pt"> <%= @class.class_name_description %> 
+					</div>
+					</div>
+			</section>
+			</div>
+			<%end%>
+				

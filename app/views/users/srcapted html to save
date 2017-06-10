@@ -1,0 +1,54 @@
+
+			<p> checking for refreshing cards </p>
+			<button type="button" class="click-class" onclick="click">click</button>
+			<div id="card-refresh" class="hidden" >
+			Hidden
+			<p> hidden content line <%= ClassListDataInfo.find(3).class_name %> </p>
+			</div>
+			<p> card should rotate above </p>
+			</div>
+			<button type="button" id ="showinfo" data-complete-text="done" class="btn btn-primary" autocomplete="off" data-toggle="collapse" text-align: center;>click for class info
+			</button>
+		</section>
+	</div>
+
+<section>
+	<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#classinfo" area-expanded="false" aria-controls="#classinfo">
+	click here for class info
+	</button>
+	<div class="collapse" id="classinfo" aria-expanded="false">
+	<div> TESTING </div>
+	</div>
+</section>
+
+<script>
+	$('#showinfo').on('click', function() {
+		$(this).button('complete')
+	})
+</script>
+
+rand(3..ClassListDataInfo.count)
+<h4> results of it statment below </h4>
+				<div> answer
+				<% y = 5 %>
+				<% if y > 2 %>
+				<%= puts y %>
+				<% end %> 
+				<% if ClassListDataInfo.find(x).class_name_description.empty? %>
+				<%= puts "yes empty" %>
+				<% else  %>
+				<%= puts "not empty" %>
+				<% end %>
+				</div>
+
+
+
+					<div>
+					<% if ClassListDataInfo.find(x).class_name_description.empty? %>
+<p> RESULTS OF EMPTY <%= puts yes empty %> </p>
+<% end %>
+</div>
+			</section>
+<% if ClassListDataInfo.find(x).class_name_description.empty? %>
+<p> RESULTS OF EMPTY <%= puts yes empty %> </p>
+<% end %>

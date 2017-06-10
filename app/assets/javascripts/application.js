@@ -42,7 +42,7 @@ $(document).on("click", "button.click-class", function() {
 
 $(document).ready(function() {
 	$(document).on("click", "button.click-class", function() {
-   		$("div.card-refresh").show();
+   		$("div#card-refresh").show();
    		console.log("is this going to console")
    		//$("div.card-refresh").toggle();
    		//alert("test");
