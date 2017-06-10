@@ -5,3 +5,9 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+card1 = ClassListDataInfo.create(class_name: "Array", 
+				class_name_description: "info for Array class")
+
+card1 = ClassListDataInfo.create(class_name: "File", 
+				class_name_description: "info for File class")

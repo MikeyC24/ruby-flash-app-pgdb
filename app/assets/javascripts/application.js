@@ -15,3 +15,34 @@
 //= require bootstrap
 //= require turbolinks
 //= require_tree .
+
+/*
+$(document).on("click", "#element", function(){
+   // do something here
+});
+
+
+
+
+$(document).on("click", "button.click-class", function() {
+   ("div.card-refresh").show();
+});
+*/
+/*
+$(document).ready(function() {
+	$("button.click-class").on("click", function( event ) {
+   		$(this).find("div.card-refresh").show();
+	});
+});
+
+$(document).on("click", "button.click-class", function() {
+   ("div.card-refresh").show();
+});
+*/
+$(document).ready(function() {
+	$(document).on("click", "button.click-class", function() {
+   		$(this).find("div.card-refresh").show();
+   		console.log("test").show();
+   		alert("test");
+	});
+});

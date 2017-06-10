@@ -1,0 +1,2 @@
+class ClassListDataInfo < ApplicationRecord
+end
