@@ -2,12 +2,12 @@
 <p> <% x = rand(MethodNameList.first.id..MethodNameList.last.id) %></p>
 <p> checking x value <%= x %> </p>
 			<% @user= MethodNameList.find(x) %>
+			<h2> <%= button_to "Show next method", exercises_path, :method => :get %>
 			<p> Class Name is: <%= @user[:method_name_hash][:class_name_list] %></p>
-<P> method from that class is..... </P>
 <% count = @user[:method_name_hash][:method_name_list].length %>
 <% class_all_methods = @user[:method_name_hash][:method_name_list] %>
-<%= count %>
-<p><%= @user[:method_name_hash][:method_name_list][rand(0..count)] %></p>
+<% count %>
+<p>method from that class is: <%= @user[:method_name_hash][:method_name_list][rand(0..count)] %></p>
       <h1>
         <%= current_user.name %>
       </h1>
