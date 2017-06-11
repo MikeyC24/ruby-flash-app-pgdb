@@ -64,3 +64,12 @@ rand(ClassListDataInfo.first.id..ClassListDataInfo.last.id)
 
 
 <p> test <%= @user %> </p>
+
+			
+			<button type="button" class="click-class" onclick="click">click</button>
+			<section>
+			<div id="card-refresh" class="hidden" >
+			<p>Hidden</p>
+			</div>
+			</section>
+		

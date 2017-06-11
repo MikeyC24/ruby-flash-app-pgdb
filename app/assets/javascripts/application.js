@@ -60,4 +60,5 @@ $(document).ready(function() {
 });
 */
 
-
+// https://stackoverflow.com/questions/20179695/jquery-update-rails-variable
+// above may help for page refresh

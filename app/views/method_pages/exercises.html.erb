@@ -5,6 +5,7 @@
 			<p> Class Name is: <%= @user[:method_name_hash][:class_name_list] %></p>
 <P> method from that class is..... </P>
 <% count = @user[:method_name_hash][:method_name_list].length %>
+<% class_all_methods = @user[:method_name_hash][:method_name_list] %>
 <%= count %>
 <p><%= @user[:method_name_hash][:method_name_list][rand(0..count)] %></p>
       <h1>
@@ -19,3 +20,6 @@ Fill in your method notes below
 <p> <%= current_user.method_posts.all %> </p>
 <p><%= @methodpost.content %></p>
 <p><%= @methodpost.content %></p>
+
+<%= class_all_methods %>
+
