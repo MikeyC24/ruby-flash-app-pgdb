@@ -3,7 +3,11 @@ class MethodPostsController < ApplicationController
 def create
 	@methodpost = current_user.method_posts.build(methodpost_params)
 	if @methodpost.save
-		flash[:success] = "Desccription added"
+		flash.now[:success] = "Description added"
+		redirect_to 'method_pages/exercises'
+	else 
+		flash.now[:danger] = "nothing added"
+		render 'method_pages/exercises'
 	end
 end
 
