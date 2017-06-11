@@ -14,21 +14,10 @@
 		<section class="">
 		<% x = rand(ClassListDataInfo.first.id..ClassListDataInfo.last.id) %>
 			<p> checking x value <%= x %> </p>
+			<h2> <%= button_to "Show new Class", current_user, :method => :get %>
+			</h2>
 			<% @class= ClassListDataInfo.find(x) %>
 			<h3> Class Name is: <%= @class.class_name %></h3>
-
-			
-			<button type="button" class="click-class" onclick="click">click</button>
-			<section>
-			<div id="card-refresh" class="hidden" >
-			<p>Hidden</p>
-			</div>
-			</section>
-		
-
-
-
-
 			<% if @class.class_name_description.blank? %>
 			<div class="class-info-empty">
 			<p> No class info</p>
