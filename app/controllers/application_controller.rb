@@ -5,5 +5,6 @@ class ApplicationController < ActionController::Base
   def class_list_rand
   class_list_rand = random(3..ClassListDataInfo.count)
 	end
-	
+
+
 end

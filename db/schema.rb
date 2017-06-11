@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170610212100) do
+ActiveRecord::Schema.define(version: 20170611010951) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,6 +28,16 @@ ActiveRecord::Schema.define(version: 20170610212100) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "method_posts", force: :cascade do |t|
+    t.text "content"
+    t.bigint "user_id"
+    t.bigint "method_name_list_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["method_name_list_id"], name: "index_method_posts_on_method_name_list_id"
+    t.index ["user_id"], name: "index_method_posts_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "email"
@@ -37,4 +47,6 @@ ActiveRecord::Schema.define(version: 20170610212100) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "method_posts", "method_name_lists"
+  add_foreign_key "method_posts", "users"
 end
