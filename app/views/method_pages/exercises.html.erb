@@ -1,0 +1,9 @@
+<h1>Method Eercises</h1>
+<p> <% x = rand(MethodNameList.first.id..MethodNameList.last.id) %></p>
+<p> checking x value <%= x %> </p>
+			<% @user= MethodNameList.find(x) %>
+			<p> Class Name is: <%= @user[:method_name_hash][:class_name_list] %></p>
+<P> method from that class is..... </P>
+<% count = @user[:method_name_hash][:method_name_list].length %>
+<%= count %>
+<p><%= @user[:method_name_hash][:method_name_list][rand(0..count)] %></p>

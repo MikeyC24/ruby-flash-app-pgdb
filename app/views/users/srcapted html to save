@@ -52,3 +52,15 @@ rand(3..ClassListDataInfo.count)
 <% if ClassListDataInfo.find(x).class_name_description.empty? %>
 <p> RESULTS OF EMPTY <%= puts yes empty %> </p>
 <% end %>
+
+
+<% @method_name = MethodNameList.find_by(class_name: [:method_name_hash][:class_name]) %>
+
+rand(ClassListDataInfo.first.id..ClassListDataInfo.last.id)
+
+<% @method_name = MethodNameList.where(class_name_list: classname) %>
+<% @user = MethodNameList.where(method_name_hash: params[class_name_list: "BasicObject", method_name_list:[6]]) %>
+<% @user1 = MethodNameList.find_by(class_name_list: [:method_name_hash][:class_name_list]) %>
+
+
+<p> test <%= @user %> </p>

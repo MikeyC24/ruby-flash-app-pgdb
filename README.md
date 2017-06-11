@@ -4,6 +4,8 @@ known issues, bugs, and points
 
 2. look into this for id integars reset ActiveRecord::Base.connection.reset_pk_sequence!('table_name')
 
+3. using scopes and simply searches for methods https://stackoverflow.com/questions/22664263/ruby-on-rails-search-with-multiple-parameters
+
 puma for testing/dev
 
 # Puma can serve each request in a thread from an internal thread pool.
