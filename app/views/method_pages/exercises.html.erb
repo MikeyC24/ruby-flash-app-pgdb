@@ -1,3 +1,5 @@
+<%= gravatar_for current_user %>
+<%= current_user.name %>
 <h1>Method Eercises</h1>
 <p> <% x = rand(MethodNameList.first.id..MethodNameList.last.id) %></p>
 <p> checking x value <%= x %> </p>
@@ -8,9 +10,6 @@
 <% class_all_methods = @user[:method_name_hash][:method_name_list] %>
 <% count %>
 <p>method from that class is: <%= @user[:method_name_hash][:method_name_list][rand(0..count)] %></p>
-      <h1>
-        <%= current_user.name %>
-      </h1>
 <section>
 Fill in your method notes below
 <%= render 'shared/methodpost_form' %>

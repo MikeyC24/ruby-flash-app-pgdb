@@ -31,10 +31,8 @@ ActiveRecord::Schema.define(version: 20170611010951) do
   create_table "method_posts", force: :cascade do |t|
     t.text "content"
     t.bigint "user_id"
-    t.bigint "method_name_list_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["method_name_list_id"], name: "index_method_posts_on_method_name_list_id"
     t.index ["user_id"], name: "index_method_posts_on_user_id"
   end
 
@@ -47,6 +45,5 @@ ActiveRecord::Schema.define(version: 20170611010951) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
-  add_foreign_key "method_posts", "method_name_lists"
   add_foreign_key "method_posts", "users"
 end
