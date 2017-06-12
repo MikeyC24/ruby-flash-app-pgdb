@@ -1,11 +1,6 @@
-<% provide(:title, "Flash Cards") %>
-	<h1> Will display all users cards </h1>
-	<p> <%= current_user.name.capitalize %>'s Cards </p>
-	<% if current_user.method_posts.any? %> 
 	<% total_cards = current_user.method_posts.count %>
 	<% card_number_1 = current_user.method_posts.first.id %>
 	<% card_number_2 = current_user.method_posts.last.id %>
-	<P> Number of cards: <%= total_cards %>
 	<% for x in card_number_1..card_number_2 %>
 	<p>Card Number <%= x %> <br>
 	Class Name: <%= current_user.method_posts.find(x).class_name %> <br>
@@ -13,12 +8,4 @@
 	Method description: <%= current_user.method_posts.find(x).content %> <br>
 	</p>
 	<% end %>
-	<% else %>
-	<p> waiting for cards </p>
-	<% end %>
 
-<h1> BREAK FOR RENDER PARTIAL </h1>
-<%= render 'shared/cards_methods_classes' %>
-
-
-'http://codebeerstartups.com/2012/11/pagination-with-ajax-using-will-paginate-in-ruby-on-rails/'

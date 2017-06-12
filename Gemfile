@@ -33,6 +33,8 @@ gem 'jquery-rails'
 # Use ActiveModel has_secure_password
 gem 'bcrypt'
 gem 'pry-byebug'
+gem 'will_paginate'
+gem 'bootstrap-will_paginate'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

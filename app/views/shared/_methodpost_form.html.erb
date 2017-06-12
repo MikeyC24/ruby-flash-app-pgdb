@@ -1,4 +1,6 @@
 <%= form_for(@methodpost) do |f| %>
+<%= f.text_area :class_name, placeholder: "add class name here" %>
+<%= f.text_area :method_name, placeholder: "add method name here" %>
 <%= f.text_area :content, placeholder: "add description here",  :rows => "10" %>
 <%=f.submit "click to add method card" %>
 <% end %>
