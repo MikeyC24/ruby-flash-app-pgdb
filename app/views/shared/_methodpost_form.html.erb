@@ -1,6 +1,16 @@
+<div type='text' class='method-post-add'>
 <%= form_for(@methodpost) do |f| %>
 <%= f.text_area :class_name, placeholder: "add class name here" %>
 <%= f.text_area :method_name, placeholder: "add method name here" %>
 <%= f.text_area :content, placeholder: "add description here",  :rows => "10" %>
 <%=f.submit "click to add method card" %>
 <% end %>
+</div>
+
+<script>
+$(document).ready(function() {
+	$('.method-post-add').focus(function() {
+		$(this).css('outline-color', '#00ff00');
+	});
+});
+</script>

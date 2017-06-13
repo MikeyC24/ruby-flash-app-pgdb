@@ -2,6 +2,7 @@ class MethodPagesController < ApplicationController
   def exercises
   	#@user = User.find(params[id])
   	@methodpost = current_user.method_posts.build if logged_in?
+  	
   end
 
   private 
